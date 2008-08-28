@@ -59,7 +59,20 @@ class Glyph(object):
 		return (self.bbX, self.bbY, self.bbW, self.bbH)
 
 	def merge_glyph(self, other, atX, atY):
-		pass
+
+		# Calculate the new bounding box
+		new_bbX = min(self.bbX, atX)
+		new_bbY = min(self.bbY, atY)
+		new_bbW = max(self.bbX + self.bbW, atX + other.bbW) - new_bbX
+		new_bbH = max(self.bbY + self.bbH, atY + other.bbH) - new_bbY
+		new_advance = max(self.advance, atX + other.advance)
+
+		# Update our properties with calculated values
+		self.bbX = new_bbX
+		self.bbY = new_bbY
+		self.bbW = new_bbW
+		self.bbH = new_bbH
+		self.advance = new_advance
 
 class Font(object):
 	"""

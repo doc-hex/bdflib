@@ -57,11 +57,11 @@ class TestGlyph(unittest.TestCase):
 		g = f.new_glyph_from_data("TestGlyph", ["4", "8"], 0,0, 2,2, 3, 1)
 
 		# Draw this glyph onto itself at 0,0
-		g.merge_glyph(g, 2,2)
+		g.merge_glyph(g, 0,0)
 
 		# Nothing should have changed.
-		self.failUnlessEqual(g.get_data(), ["4", "8"])
 		self.failUnlessEqual(g.get_bounding_box(), (0,0, 2,2))
+		self.failUnlessEqual(g.get_data(), ["4", "8"])
 		self.failUnlessEqual(g.advance, 3)
 
 	def test_glyph_merging_above(self):
@@ -71,14 +71,14 @@ class TestGlyph(unittest.TestCase):
 		# Draw this glyph onto itself but a few rows higher.
 		g.merge_glyph(g, 0,4)
 
-		# Now there should be some blank rows in the bitmap
-		self.failUnlessEqual(g.get_data(), ["4", "8", "0", "0", "4", "8"])
-
-		# The bounding box should be higher, too.
+		# The bounding box should be higher.
 		self.failUnlessEqual(g.get_bounding_box(), (0,0, 2,6))
 
 		# The advance shouldn't have changed.
 		self.failUnlessEqual(g.advance, 3)
+
+		# There should be some blank rows in the bitmap
+		self.failUnlessEqual(g.get_data(), ["4", "8", "0", "0", "4", "8"])
 
 	def test_glyph_merging_below(self):
 		f = model.Font("TestFont", 12, 100,100)
@@ -87,9 +87,6 @@ class TestGlyph(unittest.TestCase):
 		# Draw this glyph onto itself but a row lower.
 		g.merge_glyph(g, 0,-3)
 
-		# Now there should be a blank row in the bitmap
-		self.failUnlessEqual(g.get_data(), ["4", "8", "0", "4", "8"])
-
 		# The origin vector should have moved downward, and the height
 		# increased to compensate.
 		self.failUnlessEqual(g.get_bounding_box(), (0,-3, 2,5))
@@ -97,15 +94,15 @@ class TestGlyph(unittest.TestCase):
 		# The advance shouldn't have changed.
 		self.failUnlessEqual(g.advance, 3)
 
+		# There should be a blank row in the bitmap
+		self.failUnlessEqual(g.get_data(), ["4", "8", "0", "4", "8"])
+
 	def test_glyph_merging_left(self):
 		f = model.Font("TestFont", 12, 100,100)
 		g = f.new_glyph_from_data("TestGlyph", ["4", "8"], 0,0, 2,2, 3, 1)
 
 		# Draw this glyph onto itself a few columns to the left.
 		g.merge_glyph(g, -4,0)
-
-		# The bitmap should be wider.
-		self.failUnlessEqual(g.get_data(), ["44", "88"])
 
 		# The origin vector should have moved left, and the width enlarged to
 		# compensate.
@@ -115,6 +112,9 @@ class TestGlyph(unittest.TestCase):
 		# right of the origin.
 		self.failUnlessEqual(g.advance, 3)
 
+		# The bitmap should be wider.
+		self.failUnlessEqual(g.get_data(), ["44", "88"])
+
 	def test_glyph_merging_right(self):
 		f = model.Font("TestFont", 12, 100,100)
 		g = f.new_glyph_from_data("TestGlyph", ["4", "8"], 0,0, 2,2, 3, 1)
@@ -122,14 +122,14 @@ class TestGlyph(unittest.TestCase):
 		# Draw this glyph onto itself a few columns to the right.
 		g.merge_glyph(g, 3,0)
 
-		# The bitmap should be wider.
-		self.failUnlessEqual(g.get_data(), ["4", "A"])
-
 		# The origin vector should be the same, and the width enlarged.
-		self.failUnlessEqual(g.get_bounding_box(), (0,0, 4,2))
+		self.failUnlessEqual(g.get_bounding_box(), (0,0, 5,2))
 
 		# The advance have enlarged, since we drew to the right of the origin.
-		self.failUnlessEqual(g.advance, 5)
+		self.failUnlessEqual(g.advance, 6)
+
+		# The bitmap should be wider.
+		self.failUnlessEqual(g.get_data(), ["48", "90"])
 
 	def test_glyph_merging(self):
 		f = model.Font("TestFont", 12, 100,100)
@@ -139,6 +139,6 @@ class TestGlyph(unittest.TestCase):
 		g.merge_glyph(g, 2,2)
 
 		# Check the results
-		self.failUnlessEqual(g.get_data(), ["1", "2", "4", "8"])
 		self.failUnlessEqual(g.get_bounding_box(), (0,0, 4,4))
 		self.failUnlessEqual(g.advance, 5)
+		self.failUnlessEqual(g.get_data(), ["1", "2", "4", "8"])
