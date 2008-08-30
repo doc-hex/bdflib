@@ -39,11 +39,54 @@ class Glyph(object):
 		else:
 			self.codepoint = codepoint
 
+	def __str__(self):
+		def padding_char(x,y):
+			if x == 0 and y == 0:
+				return '+'
+			elif x == 0:
+				return '|'
+			elif y == 0:
+				return '-'
+			else:
+				return '.'
+
+		# What are the extents of this bitmap, given that we always want to
+		# include the origin?
+		bitmap_min_X = min(0, self.bbX)
+		bitmap_max_X = max(0, self.bbX + self.bbW-1)
+		bitmap_min_Y = min(0, self.bbY)
+		bitmap_max_Y = max(0, self.bbY + self.bbH-1)
+
+		res = []
+		for y in range(bitmap_max_Y, bitmap_min_Y - 1, -1):
+			res_row = []
+			# Find the data row associated with this output row.
+			if self.bbY <= y < self.bbY + self.bbH:
+				data_row = self.data[y - self.bbY]
+			else:
+				data_row = 0
+			for x in range(bitmap_min_X, bitmap_max_X + 1):
+				# Figure out which bit controls (x,y)
+				bit_number = self.bbW - (x - self.bbX) - 1
+				# If we're in a cell covered by the bitmap and this particular
+				# bit is set...
+				if self.bbX <= x < self.bbX + self.bbW and (
+						data_row >> bit_number & 1):
+					res_row.append('#')
+				else:
+					res_row.append(padding_char(x,y))
+			res.append("".join(res_row))
+
+		return "\n".join(res)
+
 	def _set_data(self, data):
 		self.data = []
 		for row in data:
 			paddingbits = len(row) * 4 - self.bbW
 			self.data.append(int(row, 16) >> paddingbits)
+
+		# Make the list indices match the coordinate system
+		self.data.reverse()
 
 	def get_data(self):
 		res = []
@@ -52,6 +95,10 @@ class Glyph(object):
 		rowWidth, paddingBits = divmod(self.bbW, 4)
 		for row in self.data:
 			res.append("%*x" % (rowWidth, row << paddingBits))
+
+		# self.data goes bottom-to-top like any proper coordinate system does,
+		# but res wants to be top-to-bottom like any proper stream-output.
+		res.reverse()
 
 		return res
 

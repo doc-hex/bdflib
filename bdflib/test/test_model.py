@@ -142,3 +142,72 @@ class TestGlyph(unittest.TestCase):
 		self.failUnlessEqual(g.get_bounding_box(), (0,0, 4,4))
 		self.failUnlessEqual(g.advance, 5)
 		self.failUnlessEqual(g.get_data(), ["1", "2", "4", "8"])
+
+	def test_glyph_printing(self):
+
+		# A small circle
+		glyph_data = ["70", "88", "88", "88", "70"]
+
+		f = model.Font("TestFont", 12, 100,100)
+		glyphs = []
+		for offset in range(0,7):
+			glyphs.append(f.new_glyph_from_data(
+					"TestGlyph%d" % offset,
+					glyph_data,
+					-5 + offset, -5 + offset,
+					5,5,
+					offset,
+					offset,
+				))
+
+		for g in glyphs:
+			print g
+			print
+
+		self.failUnlessEqual([str(g) for g in glyphs],
+				[
+					"-----+\n"
+					".###.|\n"
+					"#...#|\n"
+					"#...#|\n"
+					"#...#|\n"
+					".###.|",
+
+					"-###+\n"
+					"#...#\n"
+					"#...#\n"
+					"#...#\n"
+					".###|",
+
+					".###.\n"
+					"#--+#\n"
+					"#..|#\n"
+					"#..|#\n"
+					".###.",
+
+					".###.\n"
+					"#.|.#\n"
+					"#-+-#\n"
+					"#.|.#\n"
+					".###.",
+
+					".###.\n"
+					"#|..#\n"
+					"#|..#\n"
+					"#+--#\n"
+					".###.",
+
+					"|###.\n"
+					"#...#\n"
+					"#...#\n"
+					"#...#\n"
+					"+###-",
+
+					"|.###.\n"
+					"|#...#\n"
+					"|#...#\n"
+					"|#...#\n"
+					"|.###.\n"
+					"+-----",
+				]
+			)
