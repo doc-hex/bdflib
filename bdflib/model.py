@@ -91,8 +91,15 @@ class Glyph(object):
 	def get_data(self):
 		res = []
 
-		# How many bits of padding do we need?
-		rowWidth, paddingBits = divmod(self.bbW, 4)
+		# How many hex digits do we need to represent each row?
+		rowWidth, extraBits = divmod(self.bbW, 4)
+
+		# How many bits of padding do we need to round up to a full hex digit?
+		if extraBits == 0:
+			paddingBits = 0
+		else:
+			paddingBits = 4 - extraBits
+
 		for row in self.data:
 			res.append("%*x" % (rowWidth, row << paddingBits))
 
