@@ -19,7 +19,7 @@ class Glyph(object):
 	Represents a font glyph and associated properties.
 	"""
 
-	def __init__(self, name, data=None, bbX=0, bbY=0, bbW=0, bbH=0, 
+	def __init__(self, name, data=None, bbX=0, bbY=0, bbW=0, bbH=0,
 			advance=0, codepoint=None):
 		"""
 		Initialise this glyph object.
@@ -164,7 +164,7 @@ class Font(object):
 		self.glyphs.append(g)
 		if codepoint >= 0:
 			if codepoint in self.glyphs_by_codepoint:
-				raise GlyphExists("A glyph already exists for codepoint %r" 
+				raise GlyphExists("A glyph already exists for codepoint %r"
 						% codepoint)
 			else:
 				self.glyphs_by_codepoint[codepoint] = g
