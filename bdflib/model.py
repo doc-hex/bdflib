@@ -113,13 +113,48 @@ class Glyph(object):
 		return (self.bbX, self.bbY, self.bbW, self.bbH)
 
 	def merge_glyph(self, other, atX, atY):
-
-		# Calculate the new bounding box
-		new_bbX = min(self.bbX, atX)
-		new_bbY = min(self.bbY, atY)
-		new_bbW = max(self.bbX + self.bbW, atX + other.bbW) - new_bbX
-		new_bbH = max(self.bbY + self.bbH, atY + other.bbH) - new_bbY
+		# Calculate the new metrics
+		new_bbX = min(self.bbX, atX + other.bbX)
+		new_bbY = min(self.bbY, atY + other.bbY)
+		new_bbW = max(self.bbX + self.bbW,
+				atX + other.bbX + other.bbW) - new_bbX
+		new_bbH = max(self.bbY + self.bbH,
+				atY + other.bbY + other.bbH) - new_bbY
 		new_advance = max(self.advance, atX + other.advance)
+
+		# Calculate the new data
+		new_data = []
+		for y in range(new_bbY, new_bbY + new_bbH):
+			# If the old glyph has a row here...
+			if self.bbY <= y < self.bbY + self.bbH:
+				old_row = self.data[y-self.bbY]
+				print "Old row %02d was: 0x%02x" % (y, old_row)
+
+				# If the right-hand edge of the bounding box has moved right,
+				# we'll need to left shift the old-data to get more empty space
+				# to draw the new glyph into.
+				right_edge_delta = (new_bbX + new_bbW) - (self.bbX + self.bbW)
+				if right_edge_delta > 0:
+					old_row <<= right_edge_delta
+					print "Old row %02d now: 0x%02x (%d)" % (
+							y, old_row, right_edge_delta)
+			else:
+				old_row = 0
+				print " No old %02d row: 0x00" % y
+			# If the new glyph has a row here...
+			if atY + other.bbY <= y < atY + other.bbY + other.bbH:
+				new_row = other.data[y - other.bbY - atY]
+				print "New row %02d was: 0x%02x" % (y, new_row)
+
+				# If the new right-hand-edge ofthe bounding box
+				if atX + other.bbX + other.bbW < new_bbX + new_bbW:
+					new_row <<= ((new_bbX + new_bbW)
+							- (atX + other.bbX + other.bbW))
+					print "New row %02d now: 0x%02x" % (y, new_row)
+			else:
+				new_row = 0
+				print " No new %02d row: 0x00" % y
+			new_data.append(old_row | new_row)
 
 		# Update our properties with calculated values
 		self.bbX = new_bbX
@@ -127,6 +162,10 @@ class Glyph(object):
 		self.bbW = new_bbW
 		self.bbH = new_bbH
 		self.advance = new_advance
+		self.data = new_data
+
+		print self
+
 
 class Font(object):
 	"""
