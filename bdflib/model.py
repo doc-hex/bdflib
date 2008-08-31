@@ -1,13 +1,6 @@
 """
 Classes to represent a bitmap font in BDF format.
 """
-import math
-
-REQUIRED_PROPERTIES = [
-		"FONT_ASCENT",
-		"FONT_DESCENT",
-		"DEFAULT_CHAR",
-	]
 
 
 class GlyphExists(Exception):
@@ -179,7 +172,6 @@ class Font(object):
 		self.properties = {
 				"FACE_NAME": str(name),
 				"POINT_SIZE": ptSize,
-				"PIXEL_SIZE": math.ceil(ydpi * ptSize / 72.0),
 				"RESOLUTION_X": xdpi,
 				"RESOLUTION_Y": ydpi,
 			}

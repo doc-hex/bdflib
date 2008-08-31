@@ -10,7 +10,6 @@ class TestFont(unittest.TestCase):
 		# Test that we're copying the values to BDF properties properly.
 		self.failUnlessEqual(f["FACE_NAME"], "TestFont")
 		self.failUnlessEqual(f["POINT_SIZE"], 12)
-		self.failUnlessEqual(f["PIXEL_SIZE"], 17)
 		self.failUnlessEqual(f["RESOLUTION_X"], 100)
 		self.failUnlessEqual(f["RESOLUTION_Y"], 100)
 
