@@ -196,6 +196,12 @@ class Font(object):
 		elif isinstance(key, int):
 			return self.glyphs_by_codepoint[key]
 
+	def __contains__(self, key):
+		if isinstance(key, str):
+			return key in self.properties
+		elif isinstance(key, int):
+			return key in self.glyphs_by_codepoint
+
 	def new_glyph_from_data(self, name, data=None, bbX=0, bbY=0, bbW=0, bbH=0,
 			advance=0, codepoint=None):
 		g = Glyph(name, data, bbX, bbY, bbW, bbH, advance, codepoint)
