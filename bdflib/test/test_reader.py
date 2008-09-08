@@ -1,4 +1,5 @@
 import unittest
+import tempfile
 try:
 	from cStringIO import StringIO
 except ImportError:
@@ -198,3 +199,13 @@ class TestReadFont(unittest.TestCase):
 
 	def test_read_from_iterable(self):
 		testFont = reader.read_from_iterable(SAMPLE_FONT.split('\n'))
+		self._check_font(testFont)
+
+	def test_read_from_file(self):
+		handle = tempfile.NamedTemporaryFile()
+		handle.write(SAMPLE_FONT)
+		handle.seek(0)
+		testFont = reader.read_from_file(handle.name)
+		self._check_font(testFont)
+		handle.close()
+

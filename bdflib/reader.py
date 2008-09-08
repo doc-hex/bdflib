@@ -29,9 +29,8 @@ def _read_glyph(iterator, font):
 		elif key == "BITMAP":
 			# The next bbH lines describe the font bitmap.
 			data = [iterator.next().strip() for i in range(bbH)]
+			assert iterator.next().strip() == "ENDCHAR"
 			break
-
-	assert iterator.next() == "ENDCHAR"
 
 	font.new_glyph_from_data(glyphName, data, bbX, bbY, bbW, bbH, advance,
 			codepoint)
@@ -81,13 +80,13 @@ def _read_font(iterator):
 			propertyCount = int(values[0])
 			[_read_property(iterator, font) for i in range(propertyCount)]
 
-			assert iterator.next() == "ENDPROPERTIES"
+			assert iterator.next().strip() == "ENDPROPERTIES"
 		elif key == "CHARS":
 			glyphCount = int(values[0])
 			[_read_glyph(iterator, font) for i in range(glyphCount)]
 			break
 
-	assert iterator.next() == "ENDFONT"
+	assert iterator.next().strip() == "ENDFONT"
 
 	return font
 
