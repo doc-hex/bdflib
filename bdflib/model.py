@@ -121,7 +121,6 @@ class Glyph(object):
 			# If the old glyph has a row here...
 			if self.bbY <= y < self.bbY + self.bbH:
 				old_row = self.data[y-self.bbY]
-				print "Old row %02d was: 0x%02x" % (y, old_row)
 
 				# If the right-hand edge of the bounding box has moved right,
 				# we'll need to left shift the old-data to get more empty space
@@ -129,24 +128,18 @@ class Glyph(object):
 				right_edge_delta = (new_bbX + new_bbW) - (self.bbX + self.bbW)
 				if right_edge_delta > 0:
 					old_row <<= right_edge_delta
-					print "Old row %02d now: 0x%02x (%d)" % (
-							y, old_row, right_edge_delta)
 			else:
 				old_row = 0
-				print " No old %02d row: 0x00" % y
 			# If the new glyph has a row here...
 			if atY + other.bbY <= y < atY + other.bbY + other.bbH:
 				new_row = other.data[y - other.bbY - atY]
-				print "New row %02d was: 0x%02x" % (y, new_row)
 
 				# If the new right-hand-edge ofthe bounding box
 				if atX + other.bbX + other.bbW < new_bbX + new_bbW:
 					new_row <<= ((new_bbX + new_bbW)
 							- (atX + other.bbX + other.bbW))
-					print "New row %02d now: 0x%02x" % (y, new_row)
 			else:
 				new_row = 0
-				print " No new %02d row: 0x00" % y
 			new_data.append(old_row | new_row)
 
 		# Update our properties with calculated values
@@ -156,8 +149,6 @@ class Glyph(object):
 		self.bbH = new_bbH
 		self.advance = new_advance
 		self.data = new_data
-
-		print self
 
 
 class Font(object):
