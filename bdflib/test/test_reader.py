@@ -153,8 +153,7 @@ class TestReadProperty(unittest.TestCase):
 		self.failUnlessEqual(testFont['SLANT'], "R")
 		self.failUnlessEqual(testFont['SETWIDTH_NAME'], "Normal")
 		self.failUnlessEqual(testFont['ADD_STYLE_NAME'], "")
-		self.failUnlessEqual(testFont['PIXEL_SIZE'], 24)
-		self.failUnlessEqual(testFont['POINT_SIZE'], 240)
+		self.failUnlessEqual(testFont['POINT_SIZE'], 24.0)
 		self.failUnlessEqual(testFont['RESOLUTION_X'], 75)
 		self.failUnlessEqual(testFont['RESOLUTION_Y'], 75)
 		self.failUnlessEqual(testFont['SPACING'], "P")
@@ -178,14 +177,16 @@ class TestReadFont(unittest.TestCase):
 		"""
 		self.failUnlessEqual(font["FACE_NAME"],
 				"-Adobe-Helvetica-Bold-R-Normal--24-240-75-75-P-65-ISO8859-1")
-		self.failUnlessEqual(font["POINT_SIZE"], 240)
+		self.failUnlessEqual(font["POINT_SIZE"], 24.0)
 		self.failUnlessEqual(font["RESOLUTION_X"], 75)
 		self.failUnlessEqual(font["RESOLUTION_Y"], 75)
 		self.failUnlessEqual(font.get_comments(), [
 				"This is a sample font in 2.1 format."
 			])
 		self.failUnlessEqual(len(font.glyphs), 2)
-		self.failUnlessEqual(len(font.properties), 20)
+		# Our code ignores PIXEL_SIZE but adds FACE_NAME, so the total is still
+		# 19.
+		self.failUnlessEqual(len(font.properties), 19)
 
 	def test_basic_operation(self):
 		testFontData = iter(SAMPLE_FONT.split('\n'))
@@ -209,3 +210,62 @@ class TestReadFont(unittest.TestCase):
 		self._check_font(testFont)
 		handle.close()
 
+	def test_fractional_point_size(self):
+		"""
+		We should correctly interpret and store a fractional point size.
+		"""
+		bdf_data = (
+				"STARTFONT 2.1\n"
+				"FONT TestFont\n"
+				"SIZE 12.2 100 100\n"
+				"FONTBOUNDINGBOX 0 0 0 0\n"
+				"STARTPROPERTIES 5\n"
+				"FACE_NAME \"TestFont\"\n"
+				"FONT_ASCENT 0\n"
+				"FONT_DESCENT 0\n"
+				"RESOLUTION_X 100\n"
+				"RESOLUTION_Y 100\n"
+				"ENDPROPERTIES\n"
+				"CHARS 0\n"
+				"ENDFONT\n"
+			)
+
+		font = reader.read_from_string(bdf_data)
+
+		self.failUnlessEqual("%0.1f" % font["POINT_SIZE"], "12.2")
+
+	def test_ignored_properties(self):
+		"""
+		Certain properties can't be set.
+
+		These properties include:
+		 - FACE_NAME: comes from FONT header.
+		 - POINT_SIZE: comes from SIZE header.
+		 - RESOLUTION_X: comes from SIZE header.
+		 - RESOLUTION_Y: comes from SIZE header.
+		 - PIXEL_SIZE: calculated from 3 previous properties.
+		"""
+
+		bdf_data = (
+				"STARTFONT 2.1\n"
+				"FONT TestFont\n"
+				"SIZE 1 2 3\n"
+				"FONTBOUNDINGBOX 0 0 0 0\n"
+				"STARTPROPERTIES 5\n"
+				"FACE_NAME \"NotATestFont\"\n"
+				"POINT_SIZE 456\n"
+				"PIXEL_SIZE 789\n"
+				"RESOLUTION_X 012\n"
+				"RESOLUTION_Y 345\n"
+				"ENDPROPERTIES\n"
+				"CHARS 0\n"
+				"ENDFONT\n"
+			)
+
+		font = reader.read_from_string(bdf_data)
+
+		self.failUnlessEqual(font["FACE_NAME"], "TestFont")
+		self.failUnlessEqual("%0.1f" % font["POINT_SIZE"], "1.0")
+		self.failUnlessEqual(font["RESOLUTION_X"], 2)
+		self.failUnlessEqual(font["RESOLUTION_Y"], 3)
+		self.failIf("PIXEL_SIZE" in font)

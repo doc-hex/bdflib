@@ -1,6 +1,15 @@
 """
 Classes to represent a bitmap font in BDF format.
 """
+# There are more reliable sources than BDF properties for these settings, so
+# we'll ignore attempts to set them.
+IGNORABLE_PROPERTIES = [
+		"FACE_NAME",
+		"POINT_SIZE",
+		"PIXEL_SIZE",
+		"RESOLUTION_X",
+		"RESOLUTION_Y",
+	]
 
 
 class GlyphExists(Exception):
@@ -182,7 +191,8 @@ class Font(object):
 
 	def __setitem__(self, name, value):
 		assert isinstance(name, str)
-		self.properties[name] = value
+		if name not in IGNORABLE_PROPERTIES:
+			self.properties[name] = value
 
 	def __getitem__(self, key):
 		if isinstance(key, str):
