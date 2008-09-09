@@ -1,0 +1,9 @@
+ - Update model and writer so they output BDF files that can be easily diffed
+   with the output of gbdfed (in particular, output bitmaps padded to bytes,
+   not nybbles).
+ - Fix handling of the SIZE and POINT_SIZE properties.
+ - Decomposed sequences that start with "i" and a composing character with the
+   'above' class should be hacked to start with dotless-i instead.
+ - We probably want to recursively de-compose characters: LATIN CAPITAL LETTER
+   A WITH MACRON AND CEDILLA tends to decompose to LATIN CAPITAL LETTER A WITH
+   MACRON and COMBINING CEDILLA.
