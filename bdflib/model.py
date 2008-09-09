@@ -94,7 +94,7 @@ class Glyph(object):
 			paddingBits = 4 - extraBits
 
 		for row in self.data:
-			res.append("%*x" % (rowWidth, row << paddingBits))
+			res.append("%*X" % (rowWidth, row << paddingBits))
 
 		# self.data goes bottom-to-top like any proper coordinate system does,
 		# but res wants to be top-to-bottom like any proper stream-output.
