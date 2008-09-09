@@ -1,0 +1,14 @@
+#!/usr/bin/python
+"""
+A script that reads a font and writes it back out.
+
+Useful for checking that no bugs are introduced in the round-trip.
+"""
+
+import sys
+from bdflib import reader, writer
+
+font = reader.read_from_file(sys.argv[1])
+output = open(sys.argv[2], 'w+')
+writer.write_bdf(font, output)
+output.close()
