@@ -61,9 +61,19 @@ class TestGlyph(unittest.TestCase):
 		Each row of the bitmap should be zero-padded to the same length.
 		"""
 		f = model.Font("TestFont", 12, 100,100)
+
+		# When a glyph is multiple hex-digits wide and a row has no bits set in
+		# the left-most columns, a zero should be placed there.
 		g = f.new_glyph_from_data("TestGlyph", ["001", "800"],
 				bbW=12, bbH=2)
 		self.failUnlessEqual(g.get_data(), ["001", "800"])
+
+		# When a glyph's width doesn't take up a full number of hex digits, the
+		# row width should be rounded up to the nearest integer number of
+		# digits, not down.
+		g = f.new_glyph_from_data("TestGlyph", ["010", "800"],
+				bbW=11, bbH=2)
+		self.failUnlessEqual(g.get_data(), ["010", "800"])
 
 	def test_duplicate_codepoints(self):
 		f = model.Font("TestFont", 12, 100,100)

@@ -88,10 +88,11 @@ class Glyph(object):
 		rowWidth, extraBits = divmod(self.bbW, 4)
 
 		# How many bits of padding do we need to round up to a full hex digit?
-		if extraBits == 0:
-			paddingBits = 0
-		else:
+		if extraBits > 0:
+			rowWidth += 1
 			paddingBits = 4 - extraBits
+		else:
+			paddingBits = 0
 
 		for row in self.data:
 			res.append("%0*X" % (rowWidth, row << paddingBits))
