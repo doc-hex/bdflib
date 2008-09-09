@@ -84,18 +84,20 @@ class Glyph(object):
 	def get_data(self):
 		res = []
 
-		# How many hex digits do we need to represent each row?
-		rowWidth, extraBits = divmod(self.bbW, 4)
+		# How many bytes do we need to represent the bits in each row?
+		rowWidth, extraBits = divmod(self.bbW, 8)
 
-		# How many bits of padding do we need to round up to a full hex digit?
+		# How many bits of padding do we need to round up to a full byte?
 		if extraBits > 0:
 			rowWidth += 1
-			paddingBits = 4 - extraBits
+			paddingBits = 8 - extraBits
 		else:
 			paddingBits = 0
 
 		for row in self.data:
-			res.append("%0*X" % (rowWidth, row << paddingBits))
+			# rowWidth is the number of bytes, but Python wants the number of
+			# nybbles, so multiply by 2.
+			res.append("%0*X" % (rowWidth*2, row << paddingBits))
 
 		# self.data goes bottom-to-top like any proper coordinate system does,
 		# but res wants to be top-to-bottom like any proper stream-output.

@@ -38,7 +38,8 @@ class TestGlyph(unittest.TestCase):
 				-3,-4, 4,6, 8, 1)
 
 		self.failUnlessEqual(g.name, "TestGlyph")
-		self.failUnlessEqual(g.get_data(), ["1", "0", "0", "0", "0", "8"])
+		self.failUnlessEqual(g.get_data(),
+				["10", "00", "00", "00", "00", "80"])
 		self.failUnlessEqual(g.get_bounding_box(), (-3,-4, 4,6))
 		self.failUnlessEqual(g.advance, 8)
 		self.failUnlessEqual(g.codepoint, 1)
@@ -54,7 +55,7 @@ class TestGlyph(unittest.TestCase):
 				bbW=4, bbH=6, advance=5)
 
 		self.failUnlessEqual(g.get_data(),
-				["A", "B", "C", "D", "E", "F"])
+				["A0", "B0", "C0", "D0", "E0", "F0"])
 
 	def test_glyphs_should_be_zero_padded(self):
 		"""
@@ -66,14 +67,14 @@ class TestGlyph(unittest.TestCase):
 		# the left-most columns, a zero should be placed there.
 		g = f.new_glyph_from_data("TestGlyph", ["001", "800"],
 				bbW=12, bbH=2)
-		self.failUnlessEqual(g.get_data(), ["001", "800"])
+		self.failUnlessEqual(g.get_data(), ["0010", "8000"])
 
 		# When a glyph's width doesn't take up a full number of hex digits, the
 		# row width should be rounded up to the nearest integer number of
 		# digits, not down.
 		g = f.new_glyph_from_data("TestGlyph", ["010", "800"],
 				bbW=11, bbH=2)
-		self.failUnlessEqual(g.get_data(), ["010", "800"])
+		self.failUnlessEqual(g.get_data(), ["0100", "8000"])
 
 	def test_duplicate_codepoints(self):
 		f = model.Font("TestFont", 12, 100,100)
@@ -91,7 +92,7 @@ class TestGlyph(unittest.TestCase):
 
 		# Nothing should have changed.
 		self.failUnlessEqual(g.get_bounding_box(), (0,0, 2,2))
-		self.failUnlessEqual(g.get_data(), ["4", "8"])
+		self.failUnlessEqual(g.get_data(), ["40", "80"])
 		self.failUnlessEqual(g.advance, 3)
 
 	def test_glyph_merging_above(self):
@@ -108,7 +109,8 @@ class TestGlyph(unittest.TestCase):
 		self.failUnlessEqual(g.advance, 3)
 
 		# There should be some blank rows in the bitmap
-		self.failUnlessEqual(g.get_data(), ["4", "8", "0", "0", "4", "8"])
+		self.failUnlessEqual(g.get_data(),
+				["40", "80", "00", "00", "40", "80"])
 
 	def test_glyph_merging_below(self):
 		f = model.Font("TestFont", 12, 100,100)
@@ -125,7 +127,7 @@ class TestGlyph(unittest.TestCase):
 		self.failUnlessEqual(g.advance, 3)
 
 		# There should be a blank row in the bitmap
-		self.failUnlessEqual(g.get_data(), ["4", "8", "0", "4", "8"])
+		self.failUnlessEqual(g.get_data(), ["40", "80", "00", "40", "80"])
 
 	def test_glyph_merging_left(self):
 		f = model.Font("TestFont", 12, 100,100)
@@ -178,7 +180,7 @@ class TestGlyph(unittest.TestCase):
 		self.failUnlessEqual(g.advance, 3)
 
 		# The bitmap should be a larger diagonal.
-		self.failUnlessEqual(g.get_data(), ["4", "A", "4"])
+		self.failUnlessEqual(g.get_data(), ["40", "A0", "40"])
 
 	def test_glyph_merging(self):
 		f = model.Font("TestFont", 12, 100,100)
@@ -190,7 +192,7 @@ class TestGlyph(unittest.TestCase):
 		# Check the results
 		self.failUnlessEqual(g.get_bounding_box(), (0,0, 4,4))
 		self.failUnlessEqual(g.advance, 5)
-		self.failUnlessEqual(g.get_data(), ["1", "2", "4", "8"])
+		self.failUnlessEqual(g.get_data(), ["10", "20", "40", "80"])
 
 	def test_glyph_printing(self):
 
