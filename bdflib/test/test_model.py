@@ -56,6 +56,15 @@ class TestGlyph(unittest.TestCase):
 		self.failUnlessEqual(g.get_data(),
 				["A", "B", "C", "D", "E", "F"])
 
+	def test_glyphs_should_be_zero_padded(self):
+		"""
+		Each row of the bitmap should be zero-padded to the same length.
+		"""
+		f = model.Font("TestFont", 12, 100,100)
+		g = f.new_glyph_from_data("TestGlyph", ["001", "800"],
+				bbW=12, bbH=2)
+		self.failUnlessEqual(g.get_data(), ["001", "800"])
+
 	def test_duplicate_codepoints(self):
 		f = model.Font("TestFont", 12, 100,100)
 		g = f.new_glyph_from_data("TestGlyph1", codepoint=1)
