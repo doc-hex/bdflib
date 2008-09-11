@@ -3,7 +3,7 @@ Code to build font and glyph objects from a BDF font.
 """
 from bdflib import model
 
-def _read_glyph(iterator, font):
+def _read_glyph(iterable, font):
 	glyphName = ""
 	codepoint = -1
 	bbX = 0
@@ -13,7 +13,7 @@ def _read_glyph(iterator, font):
 	advance = 0
 	data = []
 
-	for line in iterator:
+	for line in iterable:
 		parts = line.strip().split(' ')
 		key = parts[0]
 		values = parts[1:]
@@ -28,27 +28,37 @@ def _read_glyph(iterator, font):
 			bbW, bbH, bbX, bbY = [int(val) for val in values]
 		elif key == "BITMAP":
 			# The next bbH lines describe the font bitmap.
-			data = [iterator.next().strip() for i in range(bbH)]
-			assert iterator.next().strip() == "ENDCHAR"
+			data = [iterable.next().strip() for i in range(bbH)]
+			assert iterable.next().strip() == "ENDCHAR"
 			break
 
 	font.new_glyph_from_data(glyphName, data, bbX, bbY, bbW, bbH, advance,
 			codepoint)
 
 
-def _read_property(iterator, font):
-	def parse_property(value):
-		if value[0] == '"':
-			return value[1:-1].replace('""', '"')
-		else:
-			return int(value)
-
-	key, value = iterator.next().strip().split(' ', 1)
-
-	font[key] = parse_property(value)
+def _unquote_property_value(value):
+	if value[0] == '"':
+		# Must be a string. Remove the outer quotes and un-escape embedded
+		# quotes.
+		return value[1:-1].replace('""', '"')
+	else:
+		# No quotes, must be an integer.
+		return int(value)
 
 
-def _read_font(iterator):
+def _read_property(iterable, font):
+	key, value = iterable.next().strip().split(' ', 1)
+
+	font[key] = _unquote_property_value(value)
+
+
+def read_bdf(iterable):
+	"""
+	Read a BDF-format font from the given source.
+
+	iterable should be an iterable that yields a string for each line of the
+	BDF file - for example, a list of strings, or a file-like object.
+	"""
 	name = ""
 	pointSize = 0.0
 	resX = 0
@@ -56,7 +66,7 @@ def _read_font(iterator):
 	comments = []
 	font = None
 
-	for line in iterator:
+	for line in iterable:
 		parts = line.strip().split(' ')
 		key = parts[0]
 		values = parts[1:]
@@ -78,26 +88,14 @@ def _read_font(iterator):
 				font.add_comment(c)
 		elif key == "STARTPROPERTIES":
 			propertyCount = int(values[0])
-			[_read_property(iterator, font) for i in range(propertyCount)]
+			[_read_property(iterable, font) for i in range(propertyCount)]
 
-			assert iterator.next().strip() == "ENDPROPERTIES"
+			assert iterable.next().strip() == "ENDPROPERTIES"
 		elif key == "CHARS":
 			glyphCount = int(values[0])
-			[_read_glyph(iterator, font) for i in range(glyphCount)]
+			[_read_glyph(iterable, font) for i in range(glyphCount)]
 			break
 
-	assert iterator.next().strip() == "ENDFONT"
+	assert iterable.next().strip() == "ENDFONT"
 
 	return font
-
-
-def read_from_iterable(iterable):
-	return _read_font(iter(iterable))
-
-
-def read_from_file(filename):
-	return read_from_iterable(open(filename, 'r'))
-
-
-def read_from_string(string):
-	return read_from_iterable(string.split("\n"))

@@ -3,8 +3,7 @@ Tools to write a Font object to a BDF File.
 """
 import math
 
-def quote_property_value(val):
-
+def _quote_property_value(val):
 	if isinstance(val, int):
 		return str(val)
 	else:
@@ -55,7 +54,7 @@ def write_bdf(font, stream):
 	keys = sorted(properties.keys())
 	for key in keys:
 		stream.write("%s %s\n" % (key,
-			quote_property_value(properties[key])))
+			_quote_property_value(properties[key])))
 	stream.write("ENDPROPERTIES\n")
 
 	# Write out the glyphs

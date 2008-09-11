@@ -8,7 +8,10 @@ Useful for checking that no bugs are introduced in the round-trip.
 import sys
 from bdflib import reader, writer
 
-font = reader.read_from_file(sys.argv[1])
-output = open(sys.argv[2], 'w+')
-writer.write_bdf(font, output)
+input = open(sys.argv[1], 'r')
+output = open(sys.argv[2], 'w')
+
+writer.write_bdf(reader.read_bdf(input), output)
+
+input.close()
 output.close()

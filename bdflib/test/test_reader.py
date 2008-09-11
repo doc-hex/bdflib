@@ -189,26 +189,10 @@ class TestReadFont(unittest.TestCase):
 		self.failUnlessEqual(len(font.properties), 19)
 
 	def test_basic_operation(self):
-		testFontData = iter(SAMPLE_FONT.split('\n'))
-		testFont = reader._read_font(testFontData)
+		testFontData = StringIO(SAMPLE_FONT)
+		testFont = reader.read_bdf(testFontData)
 
 		self._check_font(testFont)
-
-	def test_read_from_string(self):
-		testFont = reader.read_from_string(SAMPLE_FONT)
-		self._check_font(testFont)
-
-	def test_read_from_iterable(self):
-		testFont = reader.read_from_iterable(SAMPLE_FONT.split('\n'))
-		self._check_font(testFont)
-
-	def test_read_from_file(self):
-		handle = tempfile.NamedTemporaryFile()
-		handle.write(SAMPLE_FONT)
-		handle.seek(0)
-		testFont = reader.read_from_file(handle.name)
-		self._check_font(testFont)
-		handle.close()
 
 	def test_fractional_point_size(self):
 		"""
@@ -230,7 +214,7 @@ class TestReadFont(unittest.TestCase):
 				"ENDFONT\n"
 			)
 
-		font = reader.read_from_string(bdf_data)
+		font = reader.read_bdf(StringIO(bdf_data))
 
 		self.failUnlessEqual("%0.1f" % font["POINT_SIZE"], "12.2")
 
@@ -262,7 +246,7 @@ class TestReadFont(unittest.TestCase):
 				"ENDFONT\n"
 			)
 
-		font = reader.read_from_string(bdf_data)
+		font = reader.read_bdf(StringIO(bdf_data))
 
 		self.failUnlessEqual(font["FACE_NAME"], "TestFont")
 		self.failUnlessEqual("%0.1f" % font["POINT_SIZE"], "1.0")

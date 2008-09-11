@@ -4,7 +4,6 @@
    A WITH MACRON AND CEDILLA tends to decompose to LATIN CAPITAL LETTER A WITH
    MACRON and COMBINING CEDILLA.
    - Alternatively, topologically-sort decompositions before use.
- - Make the reader and writer APIs more similar.
  - Support adding customizable decompositions for glyphs that can be
    graphically but not semantically composed; for example you might build
    a combining slash, the fraction slash etc. from "/". Also, "LATIN CAPITAL
