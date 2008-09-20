@@ -3,6 +3,7 @@ Tools for building glyphs by combining other glyphs.
 """
 import sys
 import unicodedata
+from bdflib.util import Tally
 
 # There are many ways in which one character might be said to be 'made up of'
 # other characters. We're only interested in the ones that involve graphically
@@ -88,6 +89,8 @@ class FontFiller(object):
 	def __init__(self, font, decompositions):
 		self.font = font
 		self.decompositions = decompositions
+		self.missing_chars = Tally("Missing combinable characters", "char")
+		self.unknown_classes = Tally("Unknown combining classes")
 
 	def add_glyph_to_font(self, char):
 		"""

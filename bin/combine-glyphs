@@ -20,5 +20,12 @@ filler.add_decomposable_glyphs_to_font()
 print "Writing out result..."
 writer.write_bdf(font, output)
 
+# Show the inventory of things this font is missing.
+print
+filler.unknown_classes.show()
+print
+filler.missing_chars.show(
+		lambda char: "%r (%s)" % (char, unicodedata.name(char)))
+
 input.close()
 output.close()
