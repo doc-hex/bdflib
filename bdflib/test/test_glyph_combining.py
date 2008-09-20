@@ -54,7 +54,7 @@ class TestBuildUnicodeDecompositions(unittest.TestCase):
 		# Unicode characters that decompose to a 'j' and an accent have the
 		# accent above, so there's no test we can test here.
 
-class TestAddGlyphToFont(unittest.TestCase):
+class TestFontFiller(unittest.TestCase):
 
 	def setUp(self):
 
@@ -76,12 +76,14 @@ class TestAddGlyphToFont(unittest.TestCase):
 				u'h': [(u'a',0), (u'b',256)],
 			}
 
+		self.filler = glyph_combining.FontFiller(self.font,
+				self.decompositions)
+
 	def test_basic_functionality(self):
 		"""
 		We succeed if we have a decomposition and the components.
 		"""
-		added = glyph_combining.add_glyph_to_font(u'c', self.font,
-				self.decompositions)
+		added = self.filler.add_glyph_to_font(u'c')
 		self.failUnlessEqual(added, True)
 
 		glyph = self.font[ord(u'c')]
@@ -96,8 +98,7 @@ class TestAddGlyphToFont(unittest.TestCase):
 		"""
 		We succeed even if we can only get the components recursively.
 		"""
-		added = glyph_combining.add_glyph_to_font(u'd', self.font,
-				self.decompositions)
+		added = self.filler.add_glyph_to_font(u'd')
 		self.failUnlessEqual(added, True)
 
 		glyph = self.font[ord(u'd')]
@@ -112,32 +113,28 @@ class TestAddGlyphToFont(unittest.TestCase):
 		"""
 		We succeed if the char is already in the font.
 		"""
-		added = glyph_combining.add_glyph_to_font(u'a', self.font,
-				self.decompositions)
+		added = self.filler.add_glyph_to_font(u'a')
 		self.failUnlessEqual(added, True)
 
 	def test_missing_decomposition(self):
 		"""
 		We fail if there's no decomposition for the given character.
 		"""
-		added = glyph_combining.add_glyph_to_font(u'z', self.font,
-				self.decompositions)
+		added = self.filler.add_glyph_to_font(u'z')
 		self.failUnlessEqual(added, False)
 
 	def test_missing_recursive_decomposition(self):
 		"""
 		We fail if there's a decomposition but no components for a character.
 		"""
-		added = glyph_combining.add_glyph_to_font(u'e', self.font,
-				self.decompositions)
+		added = self.filler.add_glyph_to_font(u'e')
 		self.failUnlessEqual(added, False)
 
 	def test_unknown_combining_class(self):
 		"""
 		We fail if there's a decomposition but we don't know how to use it.
 		"""
-		added = glyph_combining.add_glyph_to_font(u'h', self.font,
-				self.decompositions)
+		added = self.filler.add_glyph_to_font(u'h')
 		self.failUnlessEqual(added, False)
 
 	def test_add_decomposable_glyphs_to_font(self):
@@ -145,8 +142,7 @@ class TestAddGlyphToFont(unittest.TestCase):
 		Add all the glyphs we can to the given font.
 		"""
 
-		glyph_combining.add_decomposable_glyphs_to_font(self.font,
-				self.decompositions)
+		self.filler.add_decomposable_glyphs_to_font()
 
 		self.failUnless(ord('c') in self.font)
 		self.failUnless(ord('d') in self.font)
