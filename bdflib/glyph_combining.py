@@ -76,3 +76,54 @@ def build_unicode_decompositions():
 		res[curr_char] = components
 
 	return res
+
+
+def add_glyph_to_font(char, font, decompositions):
+	"""
+	Add the glyph representing char to the given font, if it can be built.
+	"""
+
+	if ord(char) in font:
+		# It's already there!
+		return True
+
+	if char not in decompositions:
+		# We don't know how to build it.
+		return False
+
+	components = decompositions[char]
+	for component in components:
+		if not add_glyph_to_font(component, font, decompositions):
+			# We don't know how to build one of the required components.
+			return False
+
+		if unicodedata.combining(component) not in SUPPORTED_COMBINING_CLASSES:
+			# We don't know how to combine this with other characters.
+			return False
+
+	# Now we have all the components, let's put them together!
+	glyph = font.new_glyph_from_data("char%d" % ord(char),
+			codepoint=ord(char))
+
+	# Draw on the base char.
+	glyph.merge_glyph(font[ord(components[0])], 0,0)
+
+	for component in components[1:]:
+		combining_class = unicodedata.combining(component)
+
+		if combining_class == 0:
+			other_glyph = font[ord(component)]
+			glyph.merge_glyph(other_glyph, glyph.advance,0)
+		else:
+			raise RuntimeError("Unsupported combining class %d" %
+					(combining_class,))
+
+	return True
+
+
+def add_decomposable_glyphs_to_font(font, decompositions):
+	"""
+	Adds all the glyphs that can be built to the given font.
+	"""
+	for char in decompositions:
+		add_glyph_to_font(char, font, decompositions)

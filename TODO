@@ -1,15 +1,8 @@
- - We probably want to recursively de-compose characters: LATIN CAPITAL LETTER
-   A WITH MACRON AND CEDILLA tends to decompose to LATIN CAPITAL LETTER A WITH
-   MACRON and COMBINING CEDILLA.
-   - Alternatively, topologically-sort decompositions before use.
- - Support adding customizable decompositions for glyphs that can be
-   graphically but not semantically composed; for example you might build
-   a combining slash, the fraction slash etc. from "/". Also, "LATIN CAPITAL
-   LETTER O WITH STROKE" doesn't have a decomposition in the Unicode-data, but
-   it would be helpful if it could be built from "O" and "/".
- - Support *only* using customized decompositions, not the unicode
-   decompositions. This should make testing "useful glyphs you don't have"
-   functionality easier.
+ - Support for setting up custom combining classes in custom decompositions, so
+   that our tests aren't restricted to the sensible set of decompositions
+   Unicode provides.
+ - Add a standard set of extra compositions that are useful for font-building,
+   such as characters WITH STROKE.
  - Support for charcell/monospaced fonts. This would involve ignoring
    decompositions with spacing characters (Dz -> "D", "z"), or maybe just
    ignoring any decompositions that went outside the defined character cell.
