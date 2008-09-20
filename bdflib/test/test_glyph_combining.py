@@ -7,7 +7,6 @@ class TestBuildUnicodeDecompositions(unittest.TestCase):
 		"""
 		build_unicode_decompositions should run without crashing.
 		"""
-
 		res = glyph_combining.build_unicode_decompositions()
 
 		# It should return a dict.
@@ -23,12 +22,12 @@ class TestBuildUnicodeDecompositions(unittest.TestCase):
 		# superscripts.
 		self.failIf(u"\N{SUPERSCRIPT TWO}" in res)
 
-		# Decompositions should be iterables of unicode characters.
-		for char in res:
-			for composition in res[char]:
-				for component in composition:
-					self.failUnlessEqual(type(component), unicode)
-					self.failUnlessEqual(len(component), 1)
+		# Decompositions should be iterables of (unicode char, int) tuples.
+		for decomposable in res:
+			for char, combining_class in res[decomposable]:
+				self.failUnlessEqual(type(char), unicode)
+				self.failUnlessEqual(len(char), 1)
+				self.failUnlessEqual(type(combining_class), int)
 
 	def test_base_dotless_i_and_j(self):
 		"""
@@ -40,16 +39,16 @@ class TestBuildUnicodeDecompositions(unittest.TestCase):
 		# a dotless 'i'.
 		components = res[u"\N{LATIN SMALL LETTER I WITH DIAERESIS}"]
 		self.failUnlessEqual(components[0],
-				u"\N{LATIN SMALL LETTER DOTLESS I}")
+				(u"\N{LATIN SMALL LETTER DOTLESS I}",0))
 
 		# If the accent is elsewhere, the base glyph should be a dotted 'i'.
 		components = res[u"\N{LATIN SMALL LETTER I WITH OGONEK}"]
-		self.failUnlessEqual(components[0], u"i")
+		self.failUnlessEqual(components[0], (u"i",0))
 
 		# Likewise, a 'j' with an accent above should be based on dotless 'j'
 		components = res[u"\N{LATIN SMALL LETTER J WITH CIRCUMFLEX}"]
 		self.failUnlessEqual(components[0],
-				u"\N{LATIN SMALL LETTER DOTLESS J}")
+				(u"\N{LATIN SMALL LETTER DOTLESS J}",0))
 
 		# ...and a 'j' with any other accent should be dotted, but the only
 		# Unicode characters that decompose to a 'j' and an accent have the
@@ -67,12 +66,14 @@ class TestAddGlyphToFont(unittest.TestCase):
 		# Create a dictionary that says how to combine them.
 		self.decompositions = {
 				# A simple combination of basic characters.
-				u'c': [u'a', u'b'],
+				u'c': [(u'a',0), (u'b',0)],
 				# A recursive definition
-				u'd': [u'c', u'a', u'b'],
+				u'd': [(u'c',0), (u'a',0), (u'b',0)],
 				# A definition that can't be solved with the glyphs in this
 				# font.
-				u'e': [u'f', u'g'],
+				u'e': [(u'f',0), (u'g',0)],
+				# A definition that involves an unknown combining class
+				u'h': [(u'a',0), (u'b',256)],
 			}
 
 	def test_basic_functionality(self):
@@ -128,6 +129,14 @@ class TestAddGlyphToFont(unittest.TestCase):
 		We fail if there's a decomposition but no components for a character.
 		"""
 		added = glyph_combining.add_glyph_to_font(u'e', self.font,
+				self.decompositions)
+		self.failUnlessEqual(added, False)
+
+	def test_unknown_combining_class(self):
+		"""
+		We fail if there's a decomposition but we don't know how to use it.
+		"""
+		added = glyph_combining.add_glyph_to_font(u'h', self.font,
 				self.decompositions)
 		self.failUnlessEqual(added, False)
 

@@ -73,7 +73,9 @@ def build_unicode_decompositions():
 				# ...replace the base character with its undotted equivalent.
 				components[0] = SOFT_DOTTED_CHARACTERS[components[0]]
 
-		res[curr_char] = components
+		# Look up the combining classes, too
+		res[curr_char] = [(char, unicodedata.combining(char))
+				for char in components]
 
 	return res
 
@@ -92,12 +94,12 @@ def add_glyph_to_font(char, font, decompositions):
 		return False
 
 	components = decompositions[char]
-	for component in components:
-		if not add_glyph_to_font(component, font, decompositions):
+	for component_char, combining_class in components:
+		if not add_glyph_to_font(component_char, font, decompositions):
 			# We don't know how to build one of the required components.
 			return False
 
-		if unicodedata.combining(component) not in SUPPORTED_COMBINING_CLASSES:
+		if combining_class not in SUPPORTED_COMBINING_CLASSES:
 			# We don't know how to combine this with other characters.
 			return False
 
@@ -106,13 +108,15 @@ def add_glyph_to_font(char, font, decompositions):
 			codepoint=ord(char))
 
 	# Draw on the base char.
-	glyph.merge_glyph(font[ord(components[0])], 0,0)
+	base_char = components[0][0]
+	base_combining_class = components[0][1]
+	assert base_combining_class == 0, "base char should be a spacing char"
+	glyph.merge_glyph(font[ord(base_char)], 0,0)
 
-	for component in components[1:]:
-		combining_class = unicodedata.combining(component)
+	for component_char, combining_class in components[1:]:
 
 		if combining_class == 0:
-			other_glyph = font[ord(component)]
+			other_glyph = font[ord(component_char)]
 			glyph.merge_glyph(other_glyph, glyph.advance,0)
 		else:
 			raise RuntimeError("Unsupported combining class %d" %

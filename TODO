@@ -1,6 +1,3 @@
- - Support for setting up custom combining classes in custom decompositions, so
-   that our tests aren't restricted to the sensible set of decompositions
-   Unicode provides.
  - Add a standard set of extra compositions that are useful for font-building,
    such as characters WITH STROKE.
  - Support more combining classes.
