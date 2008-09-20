@@ -104,12 +104,14 @@ class FontFiller(object):
 
 		components = self.decompositions[char]
 		for component_char, combining_class in components:
-			if not self.add_glyph_to_font(component_char):
-				# We don't know how to build one of the required components.
-				return False
-
 			if combining_class not in SUPPORTED_COMBINING_CLASSES:
 				# We don't know how to combine this with other characters.
+				self.unknown_classes.record(combining_class)
+				return False
+
+			if not self.add_glyph_to_font(component_char):
+				# We don't know how to build one of the required components.
+				self.missing_chars.record(component_char)
 				return False
 
 		# Now we have all the components, let's put them together!
