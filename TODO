@@ -3,6 +3,7 @@
    Unicode provides.
  - Add a standard set of extra compositions that are useful for font-building,
    such as characters WITH STROKE.
+ - Support more combining classes.
  - Support for charcell/monospaced fonts. This would involve ignoring
    decompositions with spacing characters (Dz -> "D", "z"), or maybe just
    ignoring any decompositions that went outside the defined character cell.
