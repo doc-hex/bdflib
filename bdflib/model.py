@@ -162,6 +162,32 @@ class Glyph(object):
 		self.advance = new_advance
 		self.data = new_data
 
+	def get_ascent(self):
+		res = self.bbY + self.bbH
+
+		# Each empty row at the top of the bitmap should not be counted as part
+		# of the ascent.
+		for row in self.data[::-1]:
+			if row != 0:
+				break
+			else:
+				res -= 1
+
+		return res
+
+	def get_descent(self):
+		res =  -1 * self.bbY
+
+		# Each empty row at the bottom of the bitmap should not be counted as
+		# part of the descent.
+		for row in self.data:
+			if row != 0:
+				break
+			else:
+				res -= 1
+
+		return res
+
 
 class Font(object):
 	"""

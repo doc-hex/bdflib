@@ -297,3 +297,47 @@ class TestGlyph(unittest.TestCase):
 					"+-----",
 				]
 			)
+
+	def test_glyph_get_ascent_and_descent(self):
+		f = model.Font("TestFont", 12, 100,100)
+
+		# For a simple glyph at the origin, ascent and descent should match the
+		# bitmap bounding box.
+		g = f.new_glyph_from_data("TestGlyph",
+				["80", "40"],
+				0,0, 2,2, 3, 1)
+		self.failUnlessEqual(g.get_ascent(), 2)
+		self.failUnlessEqual(g.get_descent(), 0)
+
+		# If the bitmap crosses the baseline, we should get a positive ascent
+		# and descent.
+		g = f.new_glyph_from_data("TestGlyph",
+				["80", "40"],
+				0,-1, 2,2, 3, 2)
+		self.failUnlessEqual(g.get_ascent(), 1)
+		self.failUnlessEqual(g.get_descent(), 1)
+
+		# If the bitmap is well above the baseline, ascent should be positive
+		# and descent negative.
+		g = f.new_glyph_from_data("TestGlyph",
+				["80", "40"],
+				0,1, 2,2, 3, 3)
+		self.failUnlessEqual(g.get_ascent(), 3)
+		self.failUnlessEqual(g.get_descent(), -1)
+
+		# If the bitmap is well below the baseline, ascent should be negative
+		# and descent positive.
+		g = f.new_glyph_from_data("TestGlyph",
+				["80", "40"],
+				0,-3, 2,2, 3, 4)
+		self.failUnlessEqual(g.get_ascent(), -1)
+		self.failUnlessEqual(g.get_descent(), 3)
+
+		# Ascent and descent should be calculated from the actual extents of
+		# the character, not the bitmap.
+
+		g = f.new_glyph_from_data("TestGlyph",
+				["00", "80", "40", "00"],
+				0,-2, 2,4, 3, 5)
+		self.failUnlessEqual(g.get_ascent(), 1)
+		self.failUnlessEqual(g.get_descent(), 1)
