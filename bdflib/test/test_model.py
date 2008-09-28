@@ -18,6 +18,24 @@ class TestFont(unittest.TestCase):
 		f["CHARSET_REGISTRY"] = "iso8859"
 		self.failUnlessEqual(f["CHARSET_REGISTRY"], "iso8859")
 
+		# Test that properties set in the font header can't be overridden by
+		# ordinary properties.
+		f["FACE_NAME"] = "blargle"
+		f["POINT_SIZE"] = 999
+		f["RESOLUTION_X"] = 999
+		f["RESOLUTION_Y"] = 999
+
+		self.failUnlessEqual(f["FACE_NAME"], "TestFont")
+		self.failUnlessEqual(f["POINT_SIZE"], 12)
+		self.failUnlessEqual(f["RESOLUTION_X"], 100)
+		self.failUnlessEqual(f["RESOLUTION_Y"], 100)
+
+		# PIXEL_SIZE is not explicitly set in the header, but can be calculated
+		# from POINT_SIZE and RESOLUTION_Y, so it needn't be set explicitly.
+		f["PIXEL_SIZE"] = 999
+
+		self.failUnless("PIXEL_SIZE" not in f)
+
 	def test_comments(self):
 		f = model.Font("TestFont", 12, 100,100)
 		f.add_comment("This is another comment")
