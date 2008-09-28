@@ -217,3 +217,27 @@ class Font(object):
 			else:
 				self.glyphs_by_codepoint[codepoint] = g
 		return g
+
+	def copy(self):
+		"""
+		Returns a deep copy of this font.
+		"""
+
+		# Create a new font object.
+		res = Font(self["FACE_NAME"], self["POINT_SIZE"], self["RESOLUTION_X"],
+				self["RESOLUTION_Y"])
+
+		# Copy the comments across.
+		for c in self.comments:
+			res.add_comment(c)
+
+		# Copy the properties across.
+		for p in self.properties:
+			res[p] = self[p]
+
+		# Copy the glyphs across.
+		for g in self.glyphs:
+			res.new_glyph_from_data(g.name, g.get_data(), g.bbX, g.bbY, g.bbW,
+					g.bbH, g.advance, g.codepoint)
+
+		return res

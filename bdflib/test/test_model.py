@@ -48,6 +48,23 @@ class TestFont(unittest.TestCase):
 				]
 			)
 
+	def test_font_copying(self):
+		f = model.Font("TestFont", 12, 100,100)
+		g = f.new_glyph_from_data("TestGlyph", ["1", "0", "0", "0", "0", "8"],
+				-3,-4, 4,6, 8, 1)
+
+		f2 = f.copy()
+		g2 = f2[1]
+
+		self.failUnlessEqual(g2.name, "TestGlyph")
+		self.failUnlessEqual(g2.get_data(),
+				["10", "00", "00", "00", "00", "80"])
+		self.failUnlessEqual(g2.get_bounding_box(), (-3,-4, 4,6))
+		self.failUnlessEqual(g2.advance, 8)
+		self.failUnlessEqual(g2.codepoint, 1)
+		self.failUnlessEqual(f2[g2.codepoint], g2)
+
+
 class TestGlyph(unittest.TestCase):
 
 	def test_glyph_creation(self):
