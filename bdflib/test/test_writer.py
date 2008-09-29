@@ -78,9 +78,9 @@ class TestBDFWriter(unittest.TestCase):
 		FONTBOUNDINGBOX should be calculated from individual glyphs.
 		"""
 		self.font.new_glyph_from_data("TestGlyph1", ["4", "8"],
-				0,0, 2,2, 3, 1)
+				1,3, 2,2, 3, 1)
 		self.font.new_glyph_from_data("TestGlyph2", ["4", "8"],
-				-2,-2, 2,2, 1, 2)
+				-5,-7, 2,2, 1, 2)
 
 		stream = StringIO()
 		writer.write_bdf(self.font, stream)
@@ -89,12 +89,12 @@ class TestBDFWriter(unittest.TestCase):
 				"STARTFONT 2.1\n"
 				"FONT TestFont\n"
 				"SIZE 12 100 100\n"
-				"FONTBOUNDINGBOX 4 4 -2 -2\n"
+				"FONTBOUNDINGBOX 8 12 -5 -7\n"
 				"STARTPROPERTIES 8\n"
 				"DEFAULT_CHAR 1\n"
 				"FACE_NAME \"TestFont\"\n"
-				"FONT_ASCENT 2\n"
-				"FONT_DESCENT -2\n"
+				"FONT_ASCENT 5\n"
+				"FONT_DESCENT 7\n"
 				"PIXEL_SIZE 17\n"
 				"POINT_SIZE 120\n"
 				"RESOLUTION_X 100\n"
@@ -105,7 +105,7 @@ class TestBDFWriter(unittest.TestCase):
 				"ENCODING 1\n"
 				"SWIDTH 176 0\n"
 				"DWIDTH 3 0\n"
-				"BBX 2 2 0 0\n"
+				"BBX 2 2 1 3\n"
 				"BITMAP\n"
 				"40\n"
 				"80\n"
@@ -114,7 +114,7 @@ class TestBDFWriter(unittest.TestCase):
 				"ENCODING 2\n"
 				"SWIDTH 58 0\n"
 				"DWIDTH 1 0\n"
-				"BBX 2 2 -2 -2\n"
+				"BBX 2 2 -5 -7\n"
 				"BITMAP\n"
 				"40\n"
 				"80\n"

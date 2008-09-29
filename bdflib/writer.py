@@ -31,8 +31,8 @@ def write_bdf(font, stream):
 	properties = {
 			"PIXEL_SIZE": int(math.ceil(
 				font["RESOLUTION_Y"] * font["POINT_SIZE"] / 72.0)),
-			"FONT_ASCENT": font_bbX + font_bbH,
-			"FONT_DESCENT": font_bbX,
+			"FONT_ASCENT": font_bbY + font_bbH,
+			"FONT_DESCENT": font_bbY * -1,
 		}
 	if len(font.glyphs_by_codepoint) > 0:
 		properties["DEFAULT_CHAR"] = min(font.glyphs_by_codepoint.keys())
