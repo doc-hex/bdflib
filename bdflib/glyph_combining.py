@@ -13,19 +13,43 @@ USEFUL_COMPOSITION_TYPES = [
 		'<noBreak>',
 	]
 
+# Combining class names. Summarised from
+# http://unicode.org/Public/UNIDATA/UCD.html#Canonical_Combining_Class_Values
+CC_SPACING			= 0		# Spacing, split, enclosing, reordrant, etc.
+CC_OVERLAY			= 1		# Overlays and interior
+CC_NUKTAS			= 7		# Nuktas
+CC_VOICING_MARKS	= 8		# Hiragana/Katakana voicing marks
+CC_VIRAMAS			= 9		# Viramas
+CC_BL_ATTACHED		= 200	# Bottom-left attached
+CC_B_ATTACHED		= 202	# Bottom attached
+CC_BR_ATTACHED		= 204	# Bottom-right attached
+CC_L_ATTACHED		= 208	# Left attached
+CC_R_ATTACHED		= 210	# Right attached
+CC_AL_ATTACHED		= 212	# Above-left attached
+CC_A_ATTACHED		= 214	# Above attached
+CC_AR_ATTACHED		= 216	# Above-right attached
+CC_BL				= 218	# Below-left
+CC_B				= 220	# Below
+CC_BR				= 222	# Below-right
+CC_L				= 224	# Left
+CC_R				= 226	# Right
+CC_AL				= 228	# Above-left
+CC_A				= 230	# Above
+CC_AR				= 232	# Above-right
+CC_B_DOUBLE			= 233	# Double below
+CC_A_DOUBLE			= 234	# Double above
+CC_IOTA_SUBSCRIPT	= 240	# Below (iota subscript)
+
 # Combining glyphs can be drawn in different places on the base glyph; the
 # combining class determines exactly where.
 SUPPORTED_COMBINING_CLASSES = [
-		0, # Ordinary spacing characters.
+		CC_SPACING,
 	]
 
 # Combining classes that mean "draw the combining character above the base
 # character". These cause characters with the "Soft_Dotted" property to be
 # treated specially.
-ABOVE_COMBINING_CLASSES = [
-		214, # Above attached
-		230, # Above
-	]
+ABOVE_COMBINING_CLASSES = [CC_A, CC_A_ATTACHED]
 
 # Characters with the "Soft_Dotted" property are treated specially a combining
 # character is drawn above them; the dot is not drawn. Since Python's
@@ -124,12 +148,13 @@ class FontFiller(object):
 		# Draw on the base char.
 		base_char = components[0][0]
 		base_combining_class = components[0][1]
-		assert base_combining_class == 0, "base char should be a spacing char"
+		assert (base_combining_class == CC_SPACING,
+				"base char should be a spacing char")
 		glyph.merge_glyph(self.font[ord(base_char)], 0,0)
 
 		for component_char, combining_class in components[1:]:
 
-			if combining_class == 0:
+			if combining_class == CC_SPACING:
 				other_glyph = self.font[ord(component_char)]
 				glyph.merge_glyph(other_glyph, glyph.advance,0)
 			else:
