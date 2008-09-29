@@ -320,3 +320,118 @@ class TestFontFillerCombiningAbove(unittest.TestCase):
 				"+---"
 			)
 
+
+class TestFontFillerCombiningBelow(unittest.TestCase):
+
+	def _build_composing_below_font(self):
+		"""
+		Return a font with glyphs useful for testing COMBINING BELOW.
+		"""
+		font = model.Font("TestFont", 12, 100, 100)
+
+		# Some glyphs for testing accent placement
+		font.new_glyph_from_data("space", [], 0,0, 0,0, 4,
+				ord(u' '))
+		font.new_glyph_from_data("Y", "A A 4 4".split(), 0,0, 3,4, 4,
+				ord(u'Y'))
+		font.new_glyph_from_data("y", "A A 6 2 D".split(), 0,-2, 3,5, 4,
+				ord(u'y'))
+		font.new_glyph_from_data("macron_below", ["F"], 0,-2, 4,1, 4,
+				ord(u'\N{COMBINING MACRON BELOW}'))
+		font.new_glyph_from_data("dot_below", ["8"], 0,-2, 1,1, 1,
+				ord(u'\N{COMBINING DOT BELOW}'))
+
+		decompositions = {
+				# Test combining an odd-width base-character with an even-width
+				# accent.
+				u'I': [(u'Y',0),
+					(u'\N{COMBINING MACRON BELOW}',glyph_combining.CC_B)],
+				u'i': [(u'y',0),
+					(u'\N{COMBINING MACRON BELOW}',glyph_combining.CC_B)],
+				# Test combining an odd-width base-character with an odd-width
+				# accent.
+				u'J': [(u'Y',0),
+					(u'\N{COMBINING DOT BELOW}',glyph_combining.CC_A)],
+				u'j': [(u'y',0),
+					(u'\N{COMBINING DOT BELOW}',glyph_combining.CC_B)],
+				u'_': [(u' ', 0),
+					(u'\N{COMBINING MACRON BELOW}',glyph_combining.CC_B)],
+			}
+
+		glyph_combining.FontFiller(
+				font,
+				decompositions,
+			).add_decomposable_glyphs_to_font()
+
+		return font
+
+	def test_composing_even_below_odd(self):
+		font = self._build_composing_below_font()
+
+		Y_macron = font[ord(u'I')]
+		print Y_macron
+		self.failUnlessEqual(str(Y_macron),
+				"#.#.\n"
+				"#.#.\n"
+				"|#..\n"
+				"+#--\n"
+				"|...\n"
+				"####"
+			)
+
+	def test_composing_odd_below_odd(self):
+		font = self._build_composing_below_font()
+
+		Y_dot = font[ord(u'J')]
+		print Y_dot
+		self.failUnlessEqual(str(Y_dot),
+				"#.#\n"
+				"#.#\n"
+				"|#.\n"
+				"+#-\n"
+				"|..\n"
+				"|#."
+			)
+
+	def test_composing_below_clears_descenders(self):
+
+		font = self._build_composing_below_font()
+
+		# Upper case and lower-case should have the accent at the same place.
+		Y_dot = font[ord(u'J')]
+		print Y_dot
+		self.failUnlessEqual(str(Y_dot),
+				"#.#\n"
+				"#.#\n"
+				"|#.\n"
+				"+#-\n"
+				"|..\n"
+				"|#."
+			)
+
+		y_dot = font[ord(u'j')]
+		print y_dot
+		self.failUnlessEqual(str(y_dot),
+				"#.#\n"
+				"#.#\n"
+				"+##\n"
+				"|.#\n"
+				"##.\n"
+				"|..\n"
+				"|#."
+			)
+
+	def test_composing_below_blank_base(self):
+		"""
+		Composing on top of a blank base char should work.
+		"""
+		font = self._build_composing_below_font()
+
+		# Underscore should be drawn in the usual place.
+		underscore = font[ord(u'_')]
+		print underscore
+		self.failUnlessEqual(str(underscore),
+				"+---\n"
+				"|...\n"
+				"####"
+			)

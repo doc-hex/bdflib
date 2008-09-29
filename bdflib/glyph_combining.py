@@ -45,6 +45,8 @@ CC_IOTA_SUBSCRIPT	= 240	# Below (iota subscript)
 SUPPORTED_COMBINING_CLASSES = [
 		CC_SPACING,
 		CC_A,
+		CC_B,
+		CC_B_ATTACHED,
 	]
 
 # Combining classes that mean "draw the combining character above the base
@@ -157,8 +159,10 @@ class FontFiller(object):
 			other_glyph = self.font[ord(component_char)]
 
 			if combining_class == CC_SPACING:
+				# Draw other_glyph beside the current glyph
 				glyph.merge_glyph(other_glyph, glyph.advance,0)
 			elif combining_class == CC_A:
+				# Draw other_glyph centred above the current glyph
 				y_offset = 0
 				x_offset = 0
 
@@ -166,6 +170,18 @@ class FontFiller(object):
 					# We assume combining glyphs are drawn above the
 					# CAP_HEIGHT.
 					y_offset = glyph.get_ascent() - self.font["CAP_HEIGHT"]
+
+				if glyph.bbW > 0:
+					x_offset = int(
+							float(glyph.advance)/2
+							- float(other_glyph.advance)/2
+						)
+
+				glyph.merge_glyph(other_glyph, x_offset,y_offset)
+			elif combining_class in (CC_B, CC_B_ATTACHED):
+				# Draw other_glyph centred below the current glyph
+				y_offset = -glyph.get_descent()
+				x_offset = 0
 
 				if glyph.bbW > 0:
 					x_offset = int(
