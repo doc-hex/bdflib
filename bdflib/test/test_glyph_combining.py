@@ -147,3 +147,176 @@ class TestFontFiller(unittest.TestCase):
 
 		self.failUnless(ord('c') in self.font)
 		self.failUnless(ord('d') in self.font)
+
+
+class TestFontFillerCombiningAbove(unittest.TestCase):
+
+	def _build_composing_above_font(self, set_cap_height=False):
+		"""
+		Return a font with glyphs useful for testing COMBINING ABOVE.
+		"""
+		font = model.Font("TestFont", 12, 100, 100)
+
+		# Some glyphs for testing accent placement
+		font.new_glyph_from_data("space", [], 0,0, 0,0, 4,
+				ord(u' '))
+		font.new_glyph_from_data("O", "4 A A 4".split(), 0,0, 3,4, 4,
+				ord(u'O'))
+		font.new_glyph_from_data("o", "4 A 4".split(), 0,0, 3,3, 4,
+				ord(u'o'))
+		font.new_glyph_from_data("macron", ["F"], 0,5, 4,1, 4,
+				ord(u'\N{COMBINING MACRON}'))
+		font.new_glyph_from_data("caron", ["4", "A"], 0,5, 3,2, 4,
+				ord(u'\N{COMBINING CARON}'))
+
+		if set_cap_height:
+			font["CAP_HEIGHT"] = 4
+
+		decompositions = {
+				# Test combining an odd-width base-character with an even-width
+				# accent.
+				u'I': [(u'O',0),
+					(u'\N{COMBINING MACRON}',glyph_combining.CC_A)],
+				u'i': [(u'o',0),
+					(u'\N{COMBINING MACRON}',glyph_combining.CC_A)],
+				# Test combining an odd-width base-character with an odd-width
+				# accent.
+				u'J': [(u'O',0),
+					(u'\N{COMBINING CARON}',glyph_combining.CC_A)],
+				u'j': [(u'o',0),
+					(u'\N{COMBINING CARON}',glyph_combining.CC_A)],
+				u'\N{MACRON}': [(u' ', 0),
+					(u'\N{COMBINING MACRON}',glyph_combining.CC_A)],
+			}
+
+		glyph_combining.FontFiller(
+				font,
+				decompositions,
+			).add_decomposable_glyphs_to_font()
+
+		return font
+
+	def test_composing_even_above_odd(self):
+		font = self._build_composing_above_font()
+
+		O_macron = font[ord(u'I')]
+		print O_macron
+		self.failUnlessEqual(str(O_macron),
+				"####\n"
+				"|...\n"
+				"|#..\n"
+				"#.#.\n"
+				"#.#.\n"
+				"+#--"
+			)
+
+	def test_composing_odd_above_odd(self):
+		font = self._build_composing_above_font()
+
+		O_caron = font[ord(u'J')]
+		print O_caron
+		self.failUnlessEqual(str(O_caron),
+				"|#.\n"
+				"#.#\n"
+				"|..\n"
+				"|#.\n"
+				"#.#\n"
+				"#.#\n"
+				"+#-"
+			)
+
+	def test_composing_above_without_CAP_HEIGHT(self):
+
+		# Build the font without CAP_HEIGHT set.
+		font = self._build_composing_above_font(False)
+
+		# Upper case and lower-case should have the accent at the same place.
+		O_caron = font[ord(u'J')]
+		print O_caron
+		self.failUnlessEqual(str(O_caron),
+				"|#.\n"
+				"#.#\n"
+				"|..\n"
+				"|#.\n"
+				"#.#\n"
+				"#.#\n"
+				"+#-"
+			)
+
+		o_caron = font[ord(u'j')]
+		print o_caron
+		self.failUnlessEqual(str(o_caron),
+				"|#.\n"
+				"#.#\n"
+				"|..\n"
+				"|..\n"
+				"|#.\n"
+				"#.#\n"
+				"+#-"
+			)
+
+	def test_composing_above_with_CAP_HEIGHT(self):
+		# Build the font with CAP_HEIGHT set.
+		font = self._build_composing_above_font(True)
+
+		# Upper case should be the same.
+		O_caron = font[ord(u'J')]
+		print O_caron
+		self.failUnlessEqual(str(O_caron),
+				"|#.\n"
+				"#.#\n"
+				"|..\n"
+				"|#.\n"
+				"#.#\n"
+				"#.#\n"
+				"+#-"
+			)
+
+		# The accent should be as high above lowercase as it is above
+		# upper-case.
+
+		o_caron = font[ord(u'j')]
+		print o_caron
+		self.failUnlessEqual(str(o_caron),
+				"|#.\n"
+				"#.#\n"
+				"|..\n"
+				"|#.\n"
+				"#.#\n"
+				"+#-"
+			)
+
+	def test_composing_above_blank_base(self):
+		"""
+		Composing on top of a blank base char should work.
+		"""
+		# Build the font with CAP_HEIGHT set.
+		font = self._build_composing_above_font(True)
+
+		# Macron should be drawn in the usual place.
+		macron = font[ord(u'\N{MACRON}')]
+		print macron
+		self.failUnlessEqual(str(macron),
+				"####\n"
+				"|...\n"
+				"|...\n"
+				"|...\n"
+				"|...\n"
+				"+---"
+			)
+
+		# Without CAP_HEIGHT set, the same should happen.
+		font = self._build_composing_above_font(False)
+
+		# Macron should be drawn in the usual place.
+		macron = font[ord(u'\N{MACRON}')]
+		print macron
+		self.failUnlessEqual(str(macron),
+				"####\n"
+				"|...\n"
+				"|...\n"
+				"|...\n"
+				"|...\n"
+				"+---"
+			)
+

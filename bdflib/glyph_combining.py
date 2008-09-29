@@ -44,6 +44,7 @@ CC_IOTA_SUBSCRIPT	= 240	# Below (iota subscript)
 # combining class determines exactly where.
 SUPPORTED_COMBINING_CLASSES = [
 		CC_SPACING,
+		CC_A,
 	]
 
 # Combining classes that mean "draw the combining character above the base
@@ -153,10 +154,26 @@ class FontFiller(object):
 		glyph.merge_glyph(self.font[ord(base_char)], 0,0)
 
 		for component_char, combining_class in components[1:]:
+			other_glyph = self.font[ord(component_char)]
 
 			if combining_class == CC_SPACING:
-				other_glyph = self.font[ord(component_char)]
 				glyph.merge_glyph(other_glyph, glyph.advance,0)
+			elif combining_class == CC_A:
+				y_offset = 0
+				x_offset = 0
+
+				if "CAP_HEIGHT" in self.font and glyph.bbH > 0:
+					# We assume combining glyphs are drawn above the
+					# CAP_HEIGHT.
+					y_offset = glyph.get_ascent() - self.font["CAP_HEIGHT"]
+
+				if glyph.bbW > 0:
+					x_offset = int(
+							float(glyph.advance)/2
+							- float(other_glyph.advance)/2
+						)
+
+				glyph.merge_glyph(other_glyph, x_offset,y_offset)
 			else:
 				raise RuntimeError("Unsupported combining class %d" %
 						(combining_class,))
