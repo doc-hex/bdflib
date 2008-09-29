@@ -1,0 +1,15 @@
+#!/usr/bin/python
+import sys
+from bdflib import reader, writer, effects
+
+base = open(sys.argv[1], 'r')
+custom = open(sys.argv[2], 'r')
+output = open(sys.argv[3], 'w+')
+
+merged = effects.merge(reader.read_bdf(base), reader.read_bdf(custom))
+
+writer.write_bdf(merged, output)
+
+base.close()
+custom.close()
+output.close()

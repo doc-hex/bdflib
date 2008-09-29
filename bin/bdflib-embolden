@@ -1,0 +1,15 @@
+#!/usr/bin/python
+import sys
+from bdflib import reader, writer, effects
+
+input = open(sys.argv[1], 'r')
+output = open(sys.argv[2], 'w+')
+
+# Make a bold version of the input font.
+bold = effects.embolden(reader.read_bdf(input))
+
+# Write out the new font.
+writer.write_bdf(bold, output)
+
+input.close()
+output.close()
