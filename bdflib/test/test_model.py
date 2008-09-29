@@ -36,6 +36,29 @@ class TestFont(unittest.TestCase):
 
 		self.failUnless("PIXEL_SIZE" not in f)
 
+	def test_property_iteration(self):
+		f = model.Font("TestFont", 12, 100,100)
+
+		keys = list(f.property_names())
+		keys.sort()
+
+		self.failUnlessEqual(keys, ["FACE_NAME", "POINT_SIZE", "RESOLUTION_X",
+				"RESOLUTION_Y"])
+
+	def test_codepoint_iteration(self):
+		f = model.Font("TestFont", 12, 100,100)
+
+		# Add glyphs at code-points out-of-order.
+		f.new_glyph_from_data("TestGlyph", ["4", "8"], 0,0, 2,2, 3, 5)
+		f.new_glyph_from_data("TestGlyph", ["4", "8"], 0,0, 2,2, 3, 16)
+		f.new_glyph_from_data("TestGlyph", ["4", "8"], 0,0, 2,2, 3, 37)
+		f.new_glyph_from_data("TestGlyph", ["4", "8"], 0,0, 2,2, 3, 93)
+
+		codepoints = list(f.codepoints())
+		codepoints.sort()
+
+		self.failUnlessEqual(codepoints, [5,16,37,93])
+
 	def test_comments(self):
 		f = model.Font("TestFont", 12, 100,100)
 		f.add_comment("This is another comment")

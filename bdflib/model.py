@@ -267,3 +267,9 @@ class Font(object):
 					g.bbH, g.advance, g.codepoint)
 
 		return res
+
+	def property_names(self):
+		return self.properties.keys()
+
+	def codepoints(self):
+		return self.glyphs_by_codepoint.keys()
