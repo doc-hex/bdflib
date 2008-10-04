@@ -35,7 +35,7 @@ def write_bdf(font, stream):
 			"FONT_DESCENT": font_bbY * -1,
 		}
 	if len(font.glyphs_by_codepoint) > 0:
-		properties["DEFAULT_CHAR"] = min(font.glyphs_by_codepoint.keys())
+		properties["DEFAULT_CHAR"] = max(font.glyphs_by_codepoint.keys())
 	properties.update(font.properties)
 
 	# The POINT_SIZE property is actually in deci-points.

@@ -91,7 +91,7 @@ class TestBDFWriter(unittest.TestCase):
 				"SIZE 12 100 100\n"
 				"FONTBOUNDINGBOX 8 12 -5 -7\n"
 				"STARTPROPERTIES 8\n"
-				"DEFAULT_CHAR 1\n"
+				"DEFAULT_CHAR 2\n"
 				"FACE_NAME \"TestFont\"\n"
 				"FONT_ASCENT 5\n"
 				"FONT_DESCENT 7\n"
