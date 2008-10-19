@@ -54,6 +54,7 @@ class TestBuildUnicodeDecompositions(unittest.TestCase):
 		# Unicode characters that decompose to a 'j' and an accent have the
 		# accent above, so there's no test we can test here.
 
+
 class TestFontFiller(unittest.TestCase):
 
 	def setUp(self):
