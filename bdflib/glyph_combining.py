@@ -153,7 +153,9 @@ class FontFiller(object):
 		base_combining_class = components[0][1]
 		assert (base_combining_class == CC_SPACING,
 				"base char should be a spacing char")
-		glyph.merge_glyph(self.font[ord(base_char)], 0,0)
+		base_glyph = self.font[ord(base_char)]
+		glyph.merge_glyph(base_glyph, 0,0)
+		glyph.advance = base_glyph.advance
 
 		for component_char, combining_class in components[1:]:
 			other_glyph = self.font[ord(component_char)]
@@ -161,6 +163,8 @@ class FontFiller(object):
 			if combining_class == CC_SPACING:
 				# Draw other_glyph beside the current glyph
 				glyph.merge_glyph(other_glyph, glyph.advance,0)
+				glyph.advance += other_glyph.advance
+
 			elif combining_class == CC_A:
 				# Draw other_glyph centred above the current glyph
 				y_offset = 0

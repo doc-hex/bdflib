@@ -125,7 +125,6 @@ class Glyph(object):
 				atX + other.bbX + other.bbW) - new_bbX
 		new_bbH = max(self.bbY + self.bbH,
 				atY + other.bbY + other.bbH) - new_bbY
-		new_advance = max(self.advance, atX + other.advance)
 
 		# Calculate the new data
 		new_data = []
@@ -159,7 +158,6 @@ class Glyph(object):
 		self.bbY = new_bbY
 		self.bbW = new_bbW
 		self.bbH = new_bbH
-		self.advance = new_advance
 		self.data = new_data
 
 	def get_ascent(self):

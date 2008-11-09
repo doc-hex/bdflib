@@ -151,7 +151,6 @@ class TestGlyph(unittest.TestCase):
 		# Nothing should have changed.
 		self.failUnlessEqual(g.get_bounding_box(), (0,0, 2,2))
 		self.failUnlessEqual(g.get_data(), ["40", "80"])
-		self.failUnlessEqual(g.advance, 3)
 
 	def test_glyph_merging_above(self):
 		f = model.Font("TestFont", 12, 100,100)
@@ -162,9 +161,6 @@ class TestGlyph(unittest.TestCase):
 
 		# The bounding box should be higher.
 		self.failUnlessEqual(g.get_bounding_box(), (0,0, 2,6))
-
-		# The advance shouldn't have changed.
-		self.failUnlessEqual(g.advance, 3)
 
 		# There should be some blank rows in the bitmap
 		self.failUnlessEqual(g.get_data(),
@@ -181,9 +177,6 @@ class TestGlyph(unittest.TestCase):
 		# increased to compensate.
 		self.failUnlessEqual(g.get_bounding_box(), (0,-3, 2,5))
 
-		# The advance shouldn't have changed.
-		self.failUnlessEqual(g.advance, 3)
-
 		# There should be a blank row in the bitmap
 		self.failUnlessEqual(g.get_data(), ["40", "80", "00", "40", "80"])
 
@@ -198,10 +191,6 @@ class TestGlyph(unittest.TestCase):
 		# compensate.
 		self.failUnlessEqual(g.get_bounding_box(), (-4,0, 6,2))
 
-		# The advance shouldn't have changed, since we didn't add anything
-		# right of the origin.
-		self.failUnlessEqual(g.advance, 3)
-
 		# The bitmap should be wider.
 		self.failUnlessEqual(g.get_data(), ["44", "88"])
 
@@ -214,9 +203,6 @@ class TestGlyph(unittest.TestCase):
 
 		# The origin vector should be the same, and the width enlarged.
 		self.failUnlessEqual(g.get_bounding_box(), (0,0, 5,2))
-
-		# The advance have enlarged, since we drew to the right of the origin.
-		self.failUnlessEqual(g.advance, 6)
 
 		# The bitmap should be wider.
 		self.failUnlessEqual(g.get_data(), ["48", "90"])
@@ -234,9 +220,6 @@ class TestGlyph(unittest.TestCase):
 		# The origin vector should be the same, and the width enlarged.
 		self.failUnlessEqual(g.get_bounding_box(), (0,1, 3,3))
 
-		# The advance should have enlarged.
-		self.failUnlessEqual(g.advance, 3)
-
 		# The bitmap should be a larger diagonal.
 		self.failUnlessEqual(g.get_data(), ["40", "A0", "40"])
 
@@ -249,7 +232,6 @@ class TestGlyph(unittest.TestCase):
 
 		# Check the results
 		self.failUnlessEqual(g.get_bounding_box(), (0,0, 4,4))
-		self.failUnlessEqual(g.advance, 5)
 		self.failUnlessEqual(g.get_data(), ["10", "20", "40", "80"])
 
 	def test_glyph_printing(self):

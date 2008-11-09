@@ -13,7 +13,6 @@ class TestEmbolden(unittest.TestCase):
 		self.failIfEqual(f, f2)
 
 		g = f2[1]
-		self.failUnlessEqual(g.advance, 4)
 		self.failUnlessEqual(g.bbX, 0)
 		self.failUnlessEqual(g.bbY, 0)
 		self.failUnlessEqual(g.bbW, 3)
