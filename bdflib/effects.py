@@ -2,12 +2,14 @@
 Various cosmetic effects for fonts.
 """
 
-def embolden(font):
+def embolden(font, maintain_spacing=True):
 	res = font.copy()
 
 	for cp in res.codepoints():
 		g = res[cp]
 		g.merge_glyph(g, 1,0)
+		if maintain_spacing:
+			g.advance += 1
 
 	return res
 

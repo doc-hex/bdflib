@@ -4,10 +4,14 @@ from bdflib import model, effects
 
 class TestEmbolden(unittest.TestCase):
 
-	def test_basic_operation(self):
+	def _build_test_font(self):
 		f = model.Font("TestFont", 12, 100,100)
 		f.new_glyph_from_data("TestGlyph", ["4", "8"], 0,0, 2,2, 3, 1)
 
+		return f
+
+	def test_basic_operation(self):
+		f = self._build_test_font()
 		f2 = effects.embolden(f)
 
 		self.failIfEqual(f, f2)
@@ -18,6 +22,21 @@ class TestEmbolden(unittest.TestCase):
 		self.failUnlessEqual(g.bbW, 3)
 		self.failUnlessEqual(g.bbH, 2)
 		self.failUnlessEqual(g.get_data(), ["60", "C0"])
+
+
+	def test_maintaining_spacing(self):
+		f = effects.embolden(self._build_test_font(), True)
+
+		g = f[1]
+
+		self.failUnlessEqual(g.advance, 4)
+
+	def test_without_maintaining_spacing(self):
+		f = effects.embolden(self._build_test_font(), False)
+
+		g = f[1]
+
+		self.failUnlessEqual(g.advance, 3)
 
 
 class TestMerge(unittest.TestCase):
