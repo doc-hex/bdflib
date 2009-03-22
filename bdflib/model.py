@@ -224,6 +224,15 @@ class Font(object):
 		elif isinstance(key, int):
 			return self.glyphs_by_codepoint[key]
 
+	def __delitem__(self, key):
+		if key in IGNORABLE_PROPERTIES: return
+		elif isinstance(key, str):
+			del self.properties[key]
+		elif isinstance(key, int):
+			g = self.glyphs_by_codepoint[key]
+			self.glyphs.remove(g)
+			del self.glyphs_by_codepoint[key]
+
 	def __contains__(self, key):
 		if isinstance(key, str):
 			return key in self.properties

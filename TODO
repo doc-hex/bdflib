@@ -7,3 +7,4 @@
  - Font manipulation functions should return a new font with the appropriate
    modifications rather than changing the original font in-place, so that
    "pipelines" of font modifications can be built.
+ - Add a test for model.Font.__delitem__()
