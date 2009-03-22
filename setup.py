@@ -34,7 +34,7 @@ setup(
 		description="Library for working with BDF font files.",
 		author="Timothy Allen",
 		author_email="screwtape@froup.com",
-		url='http://gitorious.org/projects/bdflib',
+		url='http://gitorious.org/projects/bdflib/pages/Home',
 		packages=['bdflib', 'bdflib.test'],
 		scripts=[
 			'bin/bdflib-embolden',
