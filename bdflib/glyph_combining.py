@@ -75,8 +75,8 @@ ABOVE_COMBINING_CLASSES = [CC_A, CC_A_ATTACHED]
 # unicodedata module won't tell us what properties a character has, we'll have
 # to hard-code the list ourselves.
 SOFT_DOTTED_CHARACTERS = {
-		u"i": u"\N{LATIN SMALL LETTER DOTLESS I}",
-		u"j": u"\N{LATIN SMALL LETTER DOTLESS J}",
+		"i": "\N{LATIN SMALL LETTER DOTLESS I}",
+		"j": "\N{LATIN SMALL LETTER DOTLESS J}",
 	}
 
 
@@ -87,7 +87,7 @@ def build_unicode_decompositions():
 	res = {}
 
 	for codepoint in range(0, sys.maxunicode + 1):
-		curr_char = unichr(codepoint)
+		curr_char = chr(codepoint)
 		hex_components = unicodedata.decomposition(curr_char).split()
 
 		if hex_components == []:
@@ -106,7 +106,7 @@ def build_unicode_decompositions():
 				continue
 
 		# Convert ['aaaa', 'bbbb'] to [u'\uaaaa', u'\ubbbb'].
-		components = [unichr(int(cp,16)) for cp in hex_components]
+		components = [chr(int(cp,16)) for cp in hex_components]
 
 		# Handle soft-dotted characters.
 		if components[0] in SOFT_DOTTED_CHARACTERS and len(components) > 1:

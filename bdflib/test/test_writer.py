@@ -1,8 +1,8 @@
 import unittest
 try:
-	from cStringIO import StringIO
+	from io import StringIO
 except ImportError:
-	from StringIO import StringIO
+	from io import StringIO
 
 from bdflib import model, writer
 
@@ -20,7 +20,7 @@ class TestBDFWriter(unittest.TestCase):
 		stream = StringIO()
 		writer.write_bdf(self.font, stream)
 
-		self.failUnlessEqual(stream.getvalue(),
+		self.assertEqual(stream.getvalue(),
 				"STARTFONT 2.1\n"
 				"FONT TestFont\n"
 				"SIZE 12 100 100\n"
@@ -55,7 +55,7 @@ class TestBDFWriter(unittest.TestCase):
 		stream = StringIO()
 		writer.write_bdf(self.font, stream)
 
-		self.failUnlessEqual(stream.getvalue(),
+		self.assertEqual(stream.getvalue(),
 				"STARTFONT 2.1\n"
 				"FONT TestFont\n"
 				"SIZE 12 100 100\n"
@@ -85,7 +85,7 @@ class TestBDFWriter(unittest.TestCase):
 		stream = StringIO()
 		writer.write_bdf(self.font, stream)
 
-		self.failUnlessEqual(stream.getvalue(),
+		self.assertEqual(stream.getvalue(),
 				"STARTFONT 2.1\n"
 				"FONT TestFont\n"
 				"SIZE 12 100 100\n"
@@ -134,7 +134,7 @@ class TestBDFWriter(unittest.TestCase):
 		stream = StringIO()
 		writer.write_bdf(self.font, stream)
 
-		self.failUnlessEqual(stream.getvalue(),
+		self.assertEqual(stream.getvalue(),
 				"STARTFONT 2.1\n"
 				"FONT TestFont\n"
 				"SIZE 12 100 100\n"
@@ -168,7 +168,7 @@ class TestBDFWriter(unittest.TestCase):
 		stream = StringIO()
 		writer.write_bdf(self.font, stream)
 
-		self.failUnlessEqual(stream.getvalue(),
+		self.assertEqual(stream.getvalue(),
 				"STARTFONT 2.1\n"
 				"FONT TestFont\n"
 				"SIZE 12 100 100\n"
@@ -224,7 +224,7 @@ class TestBDFWriter(unittest.TestCase):
 			stream = StringIO()
 			writer.write_bdf(font, stream)
 
-			self.failUnlessEqual(stream.getvalue(),
+			self.assertEqual(stream.getvalue(),
 					"STARTFONT 2.1\n"
 					"FONT TestFont\n"
 					"SIZE %(pointSz)g %(res)d %(res)d\n"

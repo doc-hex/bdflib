@@ -1,9 +1,9 @@
 import unittest
 import tempfile
 try:
-	from cStringIO import StringIO
+	from io import StringIO
 except ImportError:
-	from StringIO import StringIO
+	from io import StringIO
 
 from bdflib import model, reader
 
@@ -95,16 +95,16 @@ class TestGlyph(unittest.TestCase):
 		testGlyph = testFont[106]
 
 		# The glyph should have the correct header data.
-		self.failUnlessEqual(testGlyph.name, 'j')
-		self.failUnlessEqual(testGlyph.codepoint, 106)
-		self.failUnlessEqual(testGlyph.advance, 8)
-		self.failUnlessEqual(testGlyph.bbX, -2)
-		self.failUnlessEqual(testGlyph.bbY, -6)
-		self.failUnlessEqual(testGlyph.bbW,  9)
-		self.failUnlessEqual(testGlyph.bbH, 22)
+		self.assertEqual(testGlyph.name, 'j')
+		self.assertEqual(testGlyph.codepoint, 106)
+		self.assertEqual(testGlyph.advance, 8)
+		self.assertEqual(testGlyph.bbX, -2)
+		self.assertEqual(testGlyph.bbY, -6)
+		self.assertEqual(testGlyph.bbW,  9)
+		self.assertEqual(testGlyph.bbH, 22)
 
 		# Make sure we got the correct glyph bitmap.
-		self.failUnlessEqual(str(testGlyph),
+		self.assertEqual(str(testGlyph),
 				'..|...###\n'
 				'..|...###\n'
 				'..|...###\n'
@@ -130,7 +130,7 @@ class TestGlyph(unittest.TestCase):
 			)
 
 		# The iterator should have nothing left in it.
-		self.failUnlessRaises(StopIteration, testGlyphData.next)
+		self.assertRaises(StopIteration, testGlyphData.__next__)
 
 
 class TestReadProperty(unittest.TestCase):
@@ -144,28 +144,28 @@ class TestReadProperty(unittest.TestCase):
 
 		# After reading the properties, the iterator should be just up to the
 		# ENDPROPERTIES line.
-		self.failUnlessEqual(testProperties.next(), "ENDPROPERTIES")
+		self.assertEqual(next(testProperties), "ENDPROPERTIES")
 
 		# Test that the properties were read correctly.
-		self.failUnlessEqual(testFont['FOUNDRY'], "Adobe")
-		self.failUnlessEqual(testFont['FAMILY'], "Helvetica")
-		self.failUnlessEqual(testFont['WEIGHT_NAME'], "Bold")
-		self.failUnlessEqual(testFont['SLANT'], "R")
-		self.failUnlessEqual(testFont['SETWIDTH_NAME'], "Normal")
-		self.failUnlessEqual(testFont['ADD_STYLE_NAME'], "")
-		self.failUnlessEqual(testFont['POINT_SIZE'], 24.0)
-		self.failUnlessEqual(testFont['RESOLUTION_X'], 75)
-		self.failUnlessEqual(testFont['RESOLUTION_Y'], 75)
-		self.failUnlessEqual(testFont['SPACING'], "P")
-		self.failUnlessEqual(testFont['AVERAGE_WIDTH'], 65)
-		self.failUnlessEqual(testFont['CHARSET_REGISTRY'], "ISO8859")
-		self.failUnlessEqual(testFont['CHARSET_ENCODING'], "1")
-		self.failUnlessEqual(testFont['MIN_SPACE'], 4)
-		self.failUnlessEqual(testFont['FONT_ASCENT'], 21)
-		self.failUnlessEqual(testFont['FONT_DESCENT'], 7)
-		self.failUnlessEqual(testFont['COPYRIGHT'],
+		self.assertEqual(testFont['FOUNDRY'], "Adobe")
+		self.assertEqual(testFont['FAMILY'], "Helvetica")
+		self.assertEqual(testFont['WEIGHT_NAME'], "Bold")
+		self.assertEqual(testFont['SLANT'], "R")
+		self.assertEqual(testFont['SETWIDTH_NAME'], "Normal")
+		self.assertEqual(testFont['ADD_STYLE_NAME'], "")
+		self.assertEqual(testFont['POINT_SIZE'], 24.0)
+		self.assertEqual(testFont['RESOLUTION_X'], 75)
+		self.assertEqual(testFont['RESOLUTION_Y'], 75)
+		self.assertEqual(testFont['SPACING'], "P")
+		self.assertEqual(testFont['AVERAGE_WIDTH'], 65)
+		self.assertEqual(testFont['CHARSET_REGISTRY'], "ISO8859")
+		self.assertEqual(testFont['CHARSET_ENCODING'], "1")
+		self.assertEqual(testFont['MIN_SPACE'], 4)
+		self.assertEqual(testFont['FONT_ASCENT'], 21)
+		self.assertEqual(testFont['FONT_DESCENT'], 7)
+		self.assertEqual(testFont['COPYRIGHT'],
 				"Copyright (c) 1987 Adobe Systems, Inc.")
-		self.failUnlessEqual(testFont['NOTICE'],
+		self.assertEqual(testFont['NOTICE'],
 				"Helvetica is a registered trademark of Linotype Inc.")
 
 
@@ -175,18 +175,18 @@ class TestReadFont(unittest.TestCase):
 		"""
 		Checks that the given font is a representation of the sample font.
 		"""
-		self.failUnlessEqual(font["FACE_NAME"],
+		self.assertEqual(font["FACE_NAME"],
 				"-Adobe-Helvetica-Bold-R-Normal--24-240-75-75-P-65-ISO8859-1")
-		self.failUnlessEqual(font["POINT_SIZE"], 24.0)
-		self.failUnlessEqual(font["RESOLUTION_X"], 75)
-		self.failUnlessEqual(font["RESOLUTION_Y"], 75)
-		self.failUnlessEqual(font.get_comments(), [
+		self.assertEqual(font["POINT_SIZE"], 24.0)
+		self.assertEqual(font["RESOLUTION_X"], 75)
+		self.assertEqual(font["RESOLUTION_Y"], 75)
+		self.assertEqual(font.get_comments(), [
 				"This is a sample font in 2.1 format."
 			])
-		self.failUnlessEqual(len(font.glyphs), 2)
+		self.assertEqual(len(font.glyphs), 2)
 		# Our code ignores PIXEL_SIZE but adds FACE_NAME, so the total is still
 		# 19.
-		self.failUnlessEqual(len(font.properties), 19)
+		self.assertEqual(len(font.properties), 19)
 
 	def test_basic_operation(self):
 		testFontData = StringIO(SAMPLE_FONT)
@@ -216,7 +216,7 @@ class TestReadFont(unittest.TestCase):
 
 		font = reader.read_bdf(StringIO(bdf_data))
 
-		self.failUnlessEqual("%0.1f" % font["POINT_SIZE"], "12.2")
+		self.assertEqual("%0.1f" % font["POINT_SIZE"], "12.2")
 
 	def test_ignored_properties(self):
 		"""
@@ -248,8 +248,8 @@ class TestReadFont(unittest.TestCase):
 
 		font = reader.read_bdf(StringIO(bdf_data))
 
-		self.failUnlessEqual(font["FACE_NAME"], "TestFont")
-		self.failUnlessEqual("%0.1f" % font["POINT_SIZE"], "1.0")
-		self.failUnlessEqual(font["RESOLUTION_X"], 2)
-		self.failUnlessEqual(font["RESOLUTION_Y"], 3)
-		self.failIf("PIXEL_SIZE" in font)
+		self.assertEqual(font["FACE_NAME"], "TestFont")
+		self.assertEqual("%0.1f" % font["POINT_SIZE"], "1.0")
+		self.assertEqual(font["RESOLUTION_X"], 2)
+		self.assertEqual(font["RESOLUTION_Y"], 3)
+		self.assertFalse("PIXEL_SIZE" in font)

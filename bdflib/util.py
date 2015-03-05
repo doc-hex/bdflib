@@ -49,14 +49,14 @@ class Tally(object):
 		if formatter is None:
 			formatter = repr
 
-		data = [(value, key) for key,value in self.counter.items()]
+		data = [(value, key) for key,value in list(self.counter.items())]
 		data.sort()
 
 		if len(data) == 0:
 			return
 		
 		if self.caption:
-			print self.caption
-		print "count %s" % self.itemname
+			print(self.caption)
+		print("count %s" % self.itemname)
 		for count, item in data:
-			print "%5d %s" % (count, formatter(item))
+			print("%5d %s" % (count, formatter(item)))

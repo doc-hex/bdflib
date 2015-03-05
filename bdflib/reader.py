@@ -44,8 +44,8 @@ def _read_glyph(iterable, font):
 			bbW, bbH, bbX, bbY = [int(val) for val in values]
 		elif key == "BITMAP":
 			# The next bbH lines describe the font bitmap.
-			data = [iterable.next().strip() for i in range(bbH)]
-			assert iterable.next().strip() == "ENDCHAR"
+			data = [next(iterable).strip() for i in range(bbH)]
+			assert next(iterable).strip() == "ENDCHAR"
 			break
 
 	font.new_glyph_from_data(glyphName, data, bbX, bbY, bbW, bbH, advance,
@@ -63,7 +63,7 @@ def _unquote_property_value(value):
 
 
 def _read_property(iterable, font):
-	key, value = iterable.next().strip().split(' ', 1)
+	key, value = next(iterable).strip().split(' ', 1)
 
 	font[key] = _unquote_property_value(value)
 
@@ -106,12 +106,12 @@ def read_bdf(iterable):
 			propertyCount = int(values[0])
 			[_read_property(iterable, font) for i in range(propertyCount)]
 
-			assert iterable.next().strip() == "ENDPROPERTIES"
+			assert next(iterable).strip() == "ENDPROPERTIES"
 		elif key == "CHARS":
 			glyphCount = int(values[0])
 			[_read_glyph(iterable, font) for i in range(glyphCount)]
 			break
 
-	assert iterable.next().strip() == "ENDFONT"
+	assert next(iterable).strip() == "ENDFONT"
 
 	return font

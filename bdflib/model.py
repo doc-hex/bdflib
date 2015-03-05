@@ -259,7 +259,7 @@ class Font(object):
 			advance=0, codepoint=None):
 		g = Glyph(name, data, bbX, bbY, bbW, bbH, advance, codepoint)
 		self.glyphs.append(g)
-		if codepoint >= 0:
+		if codepoint is not None and codepoint >= 0:
 			if codepoint in self.glyphs_by_codepoint:
 				raise GlyphExists("A glyph already exists for codepoint %r"
 						% codepoint)
@@ -292,7 +292,7 @@ class Font(object):
 		return res
 
 	def property_names(self):
-		return self.properties.keys()
+		return list(self.properties.keys())
 
 	def codepoints(self):
-		return self.glyphs_by_codepoint.keys()
+		return list(self.glyphs_by_codepoint.keys())

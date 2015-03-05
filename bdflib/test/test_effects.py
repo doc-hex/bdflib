@@ -14,14 +14,14 @@ class TestEmbolden(unittest.TestCase):
 		f = self._build_test_font()
 		f2 = effects.embolden(f)
 
-		self.failIfEqual(f, f2)
+		self.assertNotEqual(f, f2)
 
 		g = f2[1]
-		self.failUnlessEqual(g.bbX, 0)
-		self.failUnlessEqual(g.bbY, 0)
-		self.failUnlessEqual(g.bbW, 3)
-		self.failUnlessEqual(g.bbH, 2)
-		self.failUnlessEqual(g.get_data(), ["60", "C0"])
+		self.assertEqual(g.bbX, 0)
+		self.assertEqual(g.bbY, 0)
+		self.assertEqual(g.bbW, 3)
+		self.assertEqual(g.bbH, 2)
+		self.assertEqual(g.get_data(), ["60", "C0"])
 
 
 	def test_maintaining_spacing(self):
@@ -29,14 +29,14 @@ class TestEmbolden(unittest.TestCase):
 
 		g = f[1]
 
-		self.failUnlessEqual(g.advance, 4)
+		self.assertEqual(g.advance, 4)
 
 	def test_without_maintaining_spacing(self):
 		f = effects.embolden(self._build_test_font(), False)
 
 		g = f[1]
 
-		self.failUnlessEqual(g.advance, 3)
+		self.assertEqual(g.advance, 3)
 
 
 class TestMerge(unittest.TestCase):
@@ -54,19 +54,19 @@ class TestMerge(unittest.TestCase):
 		merged1 = effects.merge(base_font, cust_font)
 
 		# We should get an entirely new font.
-		self.failIfEqual(merged1, base_font)
-		self.failIfEqual(merged1, cust_font)
+		self.assertNotEqual(merged1, base_font)
+		self.assertNotEqual(merged1, cust_font)
 
 		# The new font should have cust* characters in preference to base
 		# characters.
-		self.failUnlessEqual(merged1[1].name, "base1")
-		self.failUnlessEqual(merged1[2].name, "cust2")
-		self.failUnlessEqual(merged1[3].name, "cust3")
+		self.assertEqual(merged1[1].name, "base1")
+		self.assertEqual(merged1[2].name, "cust2")
+		self.assertEqual(merged1[3].name, "cust3")
 
 		# If we merge things the other way around...
 		merged2 = effects.merge(cust_font, base_font)
 
 		# ...the new font should prefer base* characters.
-		self.failUnlessEqual(merged2[1].name, "base1")
-		self.failUnlessEqual(merged2[2].name, "base2")
-		self.failUnlessEqual(merged2[3].name, "cust3")
+		self.assertEqual(merged2[1].name, "base1")
+		self.assertEqual(merged2[2].name, "base2")
+		self.assertEqual(merged2[3].name, "cust3")
