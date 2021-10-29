@@ -1,8 +1,0 @@
-.*.swp
-*.pyc
-*.pyo
-*.bdf
-*.bak
-build/
-dist/
-MANIFEST
